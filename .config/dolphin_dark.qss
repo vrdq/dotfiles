@@ -1,0 +1,12 @@
+QTreeView, QTreeView::item, QHeaderView::section {
+    background-color: #181818;
+    alternate-background-color: #181818;
+    color: #e0e0e0;
+}
+QTreeView::item:hover {
+    background-color: #282828;
+}
+QTreeView::item:selected {
+    background-color: #383838;
+    color: #ffffff;
+}
