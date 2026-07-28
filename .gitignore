@@ -1,0 +1,22 @@
+# Secrets and machine-local state
+.env*
+*.pem
+*.key
+*.crt
+*.log
+*history*
+*.backup*
+
+# Runtime/cache data
+.cache/
+.local/state/
+**/Cache/
+**/CachedData/
+**/cache/
+**/.dms-backups/
+
+# Editor/OS files
+.DS_Store
+.idea/
+.vscode/
+
