@@ -16,5 +16,18 @@ while IFS= read -r -d '' source_path; do
     ln -s -- "$source_path" "$target_path"
 done < <(find "$repo_dir/.config" -type f -print0)
 
-printf 'Installed dotfiles. Existing files were backed up to: %s\n' "$backup_dir"
+if [[ -d "$repo_dir/scripts" ]]; then
+    mkdir -p "$HOME/.local/bin"
+    while IFS= read -r -d '' source_path; do
+        script_name="$(basename -- "$source_path")"
+        [[ "$script_name" == ".cursor_version" ]] && continue
+        target_path="$HOME/.local/bin/$script_name"
+        if [[ -e "$target_path" || -L "$target_path" ]]; then
+            mkdir -p "$(dirname -- "$backup_dir/.local/bin/$script_name")"
+            mv -- "$target_path" "$backup_dir/.local/bin/$script_name"
+        fi
+        ln -s -- "$source_path" "$target_path"
+    done < <(find "$repo_dir/scripts" -maxdepth 1 -type f -print0)
+fi
 
+printf 'Installed dotfiles. Existing files were backed up to: %s\n' "$backup_dir"
