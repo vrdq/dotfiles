@@ -15,17 +15,20 @@ hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 hl.env("__GL_GSYNC_ALLOWED", "1")
 hl.env("__GL_VRR_ALLOWED", "1")
 hl.env("NVD_BACKEND", "direct")
--- hl.env("AQ_NO_MODIFIERS", "1")
+hl.env("AQ_NO_MODIFIERS", "1")
+-- NVIDIA documents these as lower-wait / multithreaded OpenGL paths. They
+-- trade a little CPU time for steadier compositor submission at high refresh.
 hl.env("__GL_YIELD", "NOTHING")
 hl.env("__GL_THREADED_OPTIMIZATIONS", "1")
+hl.env("__GL_SYNC_DISPLAY_DEVICE", "eDP-1")
 -- Wayland
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 -- Cursor
-hl.env("XCURSOR_THEME", "breeze_cursors")
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_THEME", "breeze_cursors")
-hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("XCURSOR_SIZE", "20")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("HYPRCURSOR_SIZE", "20")
 -- Qt / Electron
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("QT_QPA_PLATFORMTHEME", "kde")
@@ -37,8 +40,9 @@ hl.env("GTK_THEME", "Breeze-Dark")
 hl.env("COLORSCHEME", "prefer-dark")
 hl.env("NO_PROXY", "127.0.0.1,localhost,::1")
 hl.env("no_proxy", "127.0.0.1,localhost,::1")
-hl.env("NODE_TLS_REJECT_UNAUTHORIZED", "0")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+hl.env("QSG_RENDER_LOOP", "threaded")
+hl.env("MOZ_ENABLE_WAYLAND", "1")
 -- Terminal
 hl.env("TERMINAL", "kitty")
 
@@ -46,14 +50,13 @@ hl.env("TERMINAL", "kitty")
 -- AUTOSTART
 -- ========================================
 hl.on("hyprland.start", function()
-    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE DISPLAY")
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE DISPLAY")
-    hl.exec_cmd("gnome-keyring-daemon --start --components=secrets &")
-    hl.exec_cmd("/usr/lib/pam_kwallet_init &")
-    hl.exec_cmd("kwalletd5 &")
-    hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1 &")
-    hl.exec_cmd("dms run &")
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE DISPLAY &")
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE HYPRLAND_INSTANCE_SIGNATURE DISPLAY &")
+    hl.exec_cmd("xrandr --output eDP-1 --primary &")
     hl.exec_cmd("hyprpaper &")
+    -- The palette is already cached. Avoid regenerating it on every login;
+    -- DMS' Matugen worker otherwise delays the completed shell by ~4 seconds.
+    hl.exec_cmd("env DMS_DISABLE_MATUGEN=1 dms run &")
 end)
 
 -- ========================================
@@ -77,9 +80,11 @@ hl.device({
 hl.config({
     input = {
         kb_layout = "us",
+        repeat_rate = 50,
+        repeat_delay = 280,
         numlock_by_default = true,
         follow_mouse = 1,        -- focus follows mouse
-        sensitivity = -0.6,
+        sensitivity = -0.8,
         accel_profile = "flat",  -- no acceleration
         touchpad = {
             tap_to_click = false,
@@ -118,10 +123,12 @@ hl.config({
         inactive_opacity = 1.0,
         blur = {
             enabled = true,
-            size = 6,
+            size = 3,
             passes = 2,
             new_optimizations = true,
             xray = false,
+            vibrancy = 0.05,
+            noise = 0,
         },
         shadow = {
             enabled = true,
@@ -138,16 +145,28 @@ hl.config({
     },
 })
 
--- Animations (defaults — clean, no errors)
-hl.animation({ leaf = "global",      enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsOut",  enabled = true, speed = 2,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "fade",        enabled = true, speed = 3,   bezier = "default" })
-hl.animation({ leaf = "border",      enabled = true, speed = 5,   bezier = "default" })
-hl.animation({ leaf = "borderangle", enabled = true, speed = 100, bezier = "linear", style = "loop" })
-hl.animation({ leaf = "workspaces",  enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "layers",      enabled = true, speed = 3,   bezier = "default" })
+-- Ultra-smooth 144Hz animation curves (zero bounce, pure fluid deceleration)
+hl.bezier({ name = "fluid144",   c1 = 0.16, c2 = 1.0, c3 = 0.3, c4 = 1.0 })
+
+hl.animation({ leaf = "global",      enabled = true, speed = 3.5, bezier = "fluid144" })
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 3.5, bezier = "fluid144", style = "popin 80%" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 3.5, bezier = "fluid144", style = "popin 80%" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 3.5, bezier = "fluid144" })
+hl.animation({ leaf = "fade",        enabled = true, speed = 3.5, bezier = "fluid144" })
+hl.animation({ leaf = "border",      enabled = true, speed = 3.5, bezier = "fluid144" })
+-- Borders are disabled below; do not keep an invisible animation running every frame.
+hl.animation({ leaf = "borderangle", enabled = false, speed = 100, bezier = "linear", style = "loop" })
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 3.5, bezier = "fluid144", style = "slide" })
+hl.animation({ leaf = "layers",      enabled = true, speed = 3.5, bezier = "fluid144" })
+
+-- ========================================
+-- DEBUG & FULL-FRAME REFRESH PACING
+-- ========================================
+hl.config({
+    debug = {
+        damage_tracking = 0,
+    },
+})
 
 -- ========================================
 -- DWINDLE TILING (vanilla)
@@ -165,10 +184,11 @@ hl.config({
     misc = {
         disable_hyprland_logo = true,
         disable_splash_rendering = true,
+        background_color = "0x000000",
         mouse_move_enables_dpms = true,
         key_press_enables_dpms = true,
-        animate_manual_resizes = true,
-        vrr = 2,
+        animate_manual_resizes = false,
+        vrr = 0,
     },
 })
 
@@ -182,13 +202,26 @@ hl.config({
 })
 
 -- ========================================
--- CURSOR
+-- PERSISTENT WORKSPACE SLOTS
+-- Keeps empty workspaces visible/available; it does not pre-render framebuffers.
 -- ========================================
-
+hl.workspace_rule({ workspace = "1", persistent = true })
+hl.workspace_rule({ workspace = "2", persistent = true })
+hl.workspace_rule({ workspace = "3", persistent = true })
+hl.workspace_rule({ workspace = "4", persistent = true })
+hl.workspace_rule({ workspace = "5", persistent = true })
 
 -- ========================================
 -- WINDOW RULES
 -- ========================================
+
+-- Polkit Authentication Dialogs
+hl.window_rule({
+    match = { class = "^(polkit-gnome-authentication-agent-1|io\\.elementary\\.desktop\\.agent-polkit|hyprpolkitagent|org\\.freedesktop\\.impl\\.portal\\.desktop\\.gtk)$" },
+    float = true,
+    pin = true,
+    center = true,
+})
 
 -- Float small/utility windows
 hl.window_rule({ match = { class = "^(org\\.gnome\\.Calculator)$" }, float = true })
@@ -240,6 +273,12 @@ require("dms.colors")
 require("dms.outputs")
 require("dms.layout")
 require("dms.cursor")
+
+-- Keep the chosen cursor authoritative if DMS regenerates dms/cursor.lua.
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
+hl.env("HYPRCURSOR_SIZE", "20")
+hl.env("XCURSOR_SIZE", "20")
 require("dms.binds")
 require("dms.binds-user")
 require("dms.windowrules")
@@ -256,13 +295,43 @@ hl.config({
     cursor = {
         default_monitor = "eDP-1",
     },
+    decoration = {
+        rounding = 10,
+        active_opacity = 1.0,
+        inactive_opacity = 1.0,
+        blur = {
+            enabled = true,
+            size = 3,
+            passes = 2,
+            new_optimizations = true,
+            xray = false,
+            vibrancy = 0.05,
+            noise = 0,
+        },
+        shadow = {
+            enabled = true,
+            range = 20,
+            render_power = 3,
+            color = "rgba(aaaaaa0e)",
+        },
+    },
     windowrulev2 = {
-        "opacity 0.90 0.90, class:^(kitty)$",
-        "opacity 0.85 0.85, class:^(vesktop)$",
+        "opacity 0.85 0.85, class:^(kitty)$",
+        "noblur, class:^(kitty)$",
+        "noblur, class:^(nvim)$",
+        "tile, class:^(Antigravity|antigravity)$",
+        "opaque, class:^(Antigravity|antigravity)$",
     }
 })
 
+hl.config({
+    render = {
+        direct_scanout = 1,
+    },
+})
+
 -- ========================================
--- GAMING ZERO-LATENCY DIRECT PRESENTATION
+-- SYSTEM-WIDE SCREEN TEARING & ZERO-LATENCY DIRECT PRESENTATION
 -- ========================================
-hl.window_rule({ match = { class = "^(Minecraft.*|minecraft.*|net-minecraft-launcher|org\\.prismlauncher\\.PrismLauncher|steam_app_.*|cs2|hl2)$" }, immediate = true, no_anim = true, idle_inhibit = "focus" })
+hl.window_rule({ match = { class = ".*" }, immediate = true })
+hl.window_rule({ match = { class = "^(Minecraft.*|minecraft.*|net-minecraft-launcher|org\\.prismlauncher\\.PrismLauncher|lunarclient|steam_app_.*|cs2|hl2|gamescope)$" }, immediate = true, no_anim = true, idle_inhibit = "focus" })
