@@ -212,7 +212,7 @@
   "waveProgressEnabled": false,
   "scrollTitleEnabled": false,
   "mediaAdaptiveWidthEnabled": true,
-  "audioVisualizerEnabled": false,
+  "audioVisualizerEnabled": true,
   "mediaUseAlbumArtAccent": false,
   "audioScrollMode": "volume",
   "audioWheelScrollAmount": 5,
