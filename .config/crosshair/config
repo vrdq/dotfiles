@@ -1,6 +1,6 @@
 # Crosshair Overlay Configuration
 shape = dot
-size = 6.0
+size = 4.0
 color = #00FF00
 outline = 1.0
 outline_color = #000000

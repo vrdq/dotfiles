@@ -1,0 +1,1 @@
+-- HyprMod managed settings placeholder

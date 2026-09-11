@@ -321,4 +321,4 @@ hl.config({
 hl.window_rule({ match = { class = "^(Minecraft.*|minecraft.*|net-minecraft-launcher|org\\.prismlauncher\\.PrismLauncher|steam_app_.*|cs2|hl2)$" }, immediate = true, no_anim = true, idle_inhibit = "focus" })
 
 -- HyprMod managed settings
-require("hyprland-gui")
+pcall(require, "hyprland-gui")

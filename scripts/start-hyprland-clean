@@ -36,4 +36,13 @@ if [ "$is_nvidia" = true ]; then
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
 fi
 
-exec /usr/bin/start-hyprland "$@"
+if command -v start-hyprland >/dev/null 2>&1; then
+    exec start-hyprland "$@"
+elif command -v Hyprland >/dev/null 2>&1; then
+    exec Hyprland "$@"
+elif command -v hyprland >/dev/null 2>&1; then
+    exec hyprland "$@"
+else
+    echo "Error: Hyprland executable not found in PATH." >&2
+    exit 1
+fi

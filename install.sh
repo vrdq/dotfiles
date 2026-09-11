@@ -117,16 +117,18 @@ read_user() {
 install_packages() {
     if [ "$DRY_RUN" = true ]; then return; fi
     if ! command -v pacman >/dev/null 2>&1; then
-        echo -e "${YELLOW}Non-pacman distribution detected. Please ensure Hyprland and DMS are installed manually.${NC}\n"
+        echo -e "${YELLOW}Non-pacman distribution detected. Please ensure Hyprland and DMS packages are installed manually.${NC}\n"
         return
     fi
 
-    local required_pkgs=(
+    # Core desktop, shell, theming, build tools, utilities, and rice apps
+    local core_pkgs=(
         hyprland
         dms-shell-hyprland
         hyprpaper
         hyprpolkitagent
         xdg-desktop-portal-hyprland
+        xdg-desktop-portal
         kitty
         fish
         fastfetch
@@ -135,37 +137,93 @@ install_packages() {
         eza
         wl-clipboard
         wl-clip-persist
+        power-profiles-daemon
         qt5ct
         qt6ct
         ttf-jetbrains-mono-nerd
-        power-profiles-daemon
+        noto-fonts
+        breeze-icons
+        breeze-gtk
         gcc
         make
         pkgconf
         gtk3
         gtk-layer-shell
+        dolphin
+        neovim
+        playerctl
+        python-pyqt6
+        jq
+        grim
+        slurp
+        libnotify
+        easyeffects
+        librewolf
+        prismlauncher
+    )
+
+    local extra_apps=(
+        vesktop
     )
 
     local missing=()
-    for pkg in "${required_pkgs[@]}"; do
+    for pkg in "${core_pkgs[@]}"; do
         if ! pacman -Q "$pkg" >/dev/null 2>&1; then
             missing+=("$pkg")
         fi
     done
 
+    for pkg in "${extra_apps[@]}"; do
+        if ! pacman -Q "$pkg" >/dev/null 2>&1 && ! pacman -Q "${pkg}-bin" >/dev/null 2>&1; then
+            missing+=("$pkg")
+        fi
+    done
+
     if [ ${#missing[@]} -gt 0 ]; then
-        echo -e "${BOLD}Missing desktop packages detected (${#missing[@]} to install):${NC}"
+        echo -e "${BOLD}Missing rice packages detected (${#missing[@]} to install):${NC}"
         echo -e "  ${CYAN}${missing[*]}${NC}\n"
 
         local do_install="y"
         if [ "$ASSUME_YES" = false ]; then
-            read_user "Install missing packages now via pacman? [Y/n] " "y" do_install
+            read_user "Install missing packages now? [Y/n] " "y" do_install
         fi
 
         if [[ ! "$do_install" =~ ^[nN] ]]; then
-            echo -e "\n${BOLD}Installing packages with sudo pacman...${NC}"
-            sudo pacman -S --needed --noconfirm "${missing[@]}"
-            echo -e "${GREEN}✓ Packages installed successfully.${NC}\n"
+            local pacman_install=()
+            local aur_install=()
+
+            for pkg in "${missing[@]}"; do
+                if pacman -Si "$pkg" >/dev/null 2>&1; then
+                    pacman_install+=("$pkg")
+                elif pacman -Si "${pkg}-bin" >/dev/null 2>&1; then
+                    pacman_install+=("${pkg}-bin")
+                else
+                    aur_install+=("$pkg")
+                fi
+            done
+
+            if [ ${#pacman_install[@]} -gt 0 ]; then
+                echo -e "\n${BOLD}Installing packages with sudo pacman...${NC}"
+                sudo pacman -S --needed --noconfirm "${pacman_install[@]}"
+                echo -e "${GREEN}✓ Official repository packages installed successfully.${NC}\n"
+            fi
+
+            if [ ${#aur_install[@]} -gt 0 ]; then
+                local aur_helper=""
+                if command -v paru >/dev/null 2>&1; then
+                    aur_helper="paru"
+                elif command -v yay >/dev/null 2>&1; then
+                    aur_helper="yay"
+                fi
+
+                if [ -n "$aur_helper" ]; then
+                    echo -e "${BOLD}Installing AUR packages with $aur_helper...${NC}"
+                    "$aur_helper" -S --needed --noconfirm "${aur_install[@]}" || true
+                else
+                    echo -e "${YELLOW}Note: The following packages are in AUR/custom repos and can be installed via paru/yay:${NC}"
+                    echo -e "  ${CYAN}${aur_install[*]}${NC}\n"
+                fi
+            fi
 
             # Enable power-profiles-daemon service if installed
             if command -v systemctl >/dev/null 2>&1; then
@@ -175,7 +233,7 @@ install_packages() {
             echo -e "${YELLOW}Skipping package install. Some features will not work until packages are installed.${NC}\n"
         fi
     else
-        echo -e "  [${GREEN}✓${NC}] All core desktop packages are installed.\n"
+        echo -e "  [${GREEN}✓${NC}] All rice packages are installed.\n"
     fi
 }
 
@@ -212,7 +270,7 @@ while IFS='|' read -r rel_path orig_type; do
     fi
 
     # Restore original file if it existed
-    if [ "\$orig_type" != "NONE" ] && [ -e "\$backed_up" ]; then
+    if [ "\$orig_type" != "NONE" ] && { [ -e "\$backed_up" ] || [ -L "\$backed_up" ]; }; then
         mkdir -p "\$(dirname -- "\$target")"
         mv "\$backed_up" "\$target"
         echo "  Restored: \$target"
@@ -235,7 +293,34 @@ install_file() {
         return
     fi
 
-    # Record and backup existing target
+    # 1. Check if file requires dynamic home substitution
+    if grep -q "__HOME__" "$source_path" 2>/dev/null; then
+        local rendered_content
+        rendered_content="$(sed "s|__HOME__|$HOME|g" "$source_path")"
+
+        # If target already exists as a non-symlink file and content matches, skip
+        if [ -f "$target_path" ] && [ ! -L "$target_path" ]; then
+            if cmp -s <(echo "$rendered_content") "$target_path"; then
+                return
+            fi
+        fi
+
+        # Backup existing target if it exists or is a symlink
+        if [ -e "$target_path" ] || [ -L "$target_path" ]; then
+            mkdir -p "$(dirname -- "$BACKUP_DIR/$relative_to_home")"
+            mv -- "$target_path" "$BACKUP_DIR/$relative_to_home"
+            echo "$relative_to_home|EXISTS" >> "$MANIFEST"
+        else
+            echo "$relative_to_home|NONE" >> "$MANIFEST"
+        fi
+
+        mkdir -p "$(dirname -- "$target_path")"
+        echo "$rendered_content" > "$target_path"
+        echo -e "  [${GREEN}templated${NC}] $relative_to_home"
+        return
+    fi
+
+    # 2. Standard symlinked files
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
         # If already pointing to source, skip
         if [ -L "$target_path" ] && [ "$(readlink -f "$target_path")" = "$(readlink -f "$source_path")" ]; then
@@ -250,15 +335,8 @@ install_file() {
     fi
 
     mkdir -p "$(dirname -- "$target_path")"
-
-    # Check if file requires dynamic home substitution
-    if grep -q "__HOME__" "$source_path" 2>/dev/null; then
-        sed "s|__HOME__|$HOME|g" "$source_path" > "$target_path"
-        echo -e "  [${GREEN}templated${NC}] $relative_to_home"
-    else
-        ln -snf -- "$source_path" "$target_path"
-        echo -e "  [${GREEN}linked${NC}] $relative_to_home"
-    fi
+    ln -snf -- "$source_path" "$target_path"
+    echo -e "  [${GREEN}linked${NC}] $relative_to_home"
 }
 
 # Pre-configure SDDM so Hyprland is selected as default session
@@ -267,12 +345,11 @@ configure_display_manager() {
 
     # Check for SDDM (standard on KDE)
     if [ -d /var/lib/sddm ]; then
-        if sudo -n true 2>/dev/null || [ "$ASSUME_YES" = true ]; then
-            if [ -f /var/lib/sddm/state.conf ]; then
-                sudo sed -i 's|^Session=.*|Session=/usr/share/wayland-sessions/hyprland.desktop|' /var/lib/sddm/state.conf 2>/dev/null || true
-            else
-                echo -e "[Last]\nSession=/usr/share/wayland-sessions/hyprland.desktop" | sudo tee /var/lib/sddm/state.conf >/dev/null 2>&1 || true
-            fi
+        echo -e "${CYAN}Ensuring Hyprland is selected in SDDM...${NC}"
+        if [ -f /var/lib/sddm/state.conf ]; then
+            sudo sed -i 's|^Session=.*|Session=/usr/share/wayland-sessions/hyprland.desktop|' /var/lib/sddm/state.conf 2>/dev/null || true
+        else
+            echo -e "[Last]\nSession=/usr/share/wayland-sessions/hyprland.desktop" | sudo tee /var/lib/sddm/state.conf >/dev/null 2>&1 || true
         fi
     fi
 }
@@ -298,6 +375,23 @@ main() {
     init_backup
     echo -e "${BOLD}Deploying configuration files...${NC}"
 
+    # 0. Migrate any legacy directory symlinks to real directories
+    if [ -d "$REPO_DIR/.config" ]; then
+        for dir in "$REPO_DIR/.config"/*; do
+            if [ -d "$dir" ]; then
+                local bname="$(basename -- "$dir")"
+                local target_dir="$HOME/.config/$bname"
+                if [ -L "$target_dir" ]; then
+                    echo -e "  [${YELLOW}migrating${NC}] Converting legacy directory symlink to real directory: .config/$bname"
+                    mkdir -p "$(dirname -- "$BACKUP_DIR/.config/$bname")"
+                    mv -- "$target_dir" "$BACKUP_DIR/.config/$bname"
+                    echo ".config/$bname|DIR_SYMLINK" >> "$MANIFEST"
+                    mkdir -p "$target_dir"
+                fi
+            fi
+        done
+    fi
+
     # 1. Install .config files
     while IFS= read -r -d '' source_file; do
         rel="${source_file#"$REPO_DIR/.config/"}"
@@ -316,6 +410,10 @@ main() {
 
     # 3. Install scripts into ~/.local/bin
     mkdir -p "$HOME/.local/bin"
+    # Clean up deprecated scripts from previous rice versions
+    if [ -e "$HOME/.local/bin/cleaning-mode" ] || [ -L "$HOME/.local/bin/cleaning-mode" ]; then
+        rm -f "$HOME/.local/bin/cleaning-mode"
+    fi
     if [ -d "$REPO_DIR/scripts" ]; then
         while IFS= read -r -d '' source_file; do
             sname="$(basename -- "$source_file")"

@@ -80,6 +80,9 @@
   "greeterFontFamily": "JetBrains Mono",
   "sortAppsAlphabetically": true,
   "rememberLastMode": false,
+  "spotlightSectionViewModes": {
+    "apps": "list"
+  },
   "dankLauncherV2ShowSourceBadges": false,
   "dankLauncherV2ShowFooter": false,
   "launcherUseOverlayLayer": true,
@@ -341,31 +344,31 @@
   "builtInPluginSettings": {
     "dms_settings_search": {
       "trigger": "?",
-      "enabled": true
+      "enabled": false
     },
     "dms_clipboard_search": {
       "trigger": "cb",
-      "enabled": true
+      "enabled": false
     },
     "dms_power": {
       "trigger": "pw",
-      "enabled": true
+      "enabled": false
     },
     "dms_qr_generator": {
       "trigger": "qrg",
-      "enabled": true
+      "enabled": false
     },
     "dms_settings": {
       "enabled": true
     },
     "dms_notepad": {
-      "enabled": true
+      "enabled": false
     },
     "dms_sysmon": {
-      "enabled": true
+      "enabled": false
     },
     "dms_colorpicker": {
-      "enabled": true
+      "enabled": false
     }
   },
   "clipboardVisibleEntryActions": [
