@@ -16,25 +16,28 @@ Includes an installer that backs up existing configurations before linking, alon
 
 ## Installation
 
-Clone the repository and run the installer:
+Open a terminal (like Konsole in KDE) and run:
 
 ```bash
-git clone https://github.com/vrdq/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-./install.sh
+git clone https://github.com/vrdq/dotfiles.git ~/dotfiles && cd ~/dotfiles && ./install.sh
 ```
 
-To preview changes without touching any files:
+Or run directly via curl:
 
 ```bash
-./install.sh --dry-run
+curl -fsSL https://raw.githubusercontent.com/vrdq/dotfiles/main/install.sh | bash
 ```
 
-To install non-interactively:
+The installer will:
+1. Detect and offer to install all missing packages (`hyprland`, `dms-shell-hyprland`, `kitty`, `fish`, `fastfetch`, fonts, and utilities) via `pacman`.
+2. Back up conflicting configuration files to `~/.dotfiles-backup/`.
+3. Deploy the dotfiles, compile the crosshair overlay, and link wallpapers.
+4. Pre-select Hyprland in your display manager (SDDM/greetd).
+5. Prompt you to reboot straight into your new desktop.
 
-```bash
-./install.sh -y
-```
+Options:
+- `./install.sh --dry-run`: Preview changes without touching files.
+- `./install.sh -y`: Automated non-interactive installation.
 
 ### Safety & Backups
 

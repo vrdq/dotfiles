@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Dotfiles Installer & System Provisioner
-# Safe, idempotent, non-destructive installer with automatic backup & rollback
+# Dotfiles Installer & Desktop Provisioner
+# Converts any Arch/CachyOS system (including KDE) into Hyprland + DMS suite.
+# Safe, idempotent, non-destructive installer with automatic backup & rollback.
 # ==============================================================================
 
 set -euo pipefail
@@ -16,6 +17,24 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+# Bootstrap clone if piped directly from curl/web
+if [ ! -d "$REPO_DIR/.config" ]; then
+    echo -e "${CYAN}Bootstrapping repository into ~/dotfiles...${NC}"
+    if ! command -v git >/dev/null 2>&1; then
+        echo -e "${RED}Error: git is required. Install with: sudo pacman -S git${NC}"
+        exit 1
+    fi
+    rm -rf "$HOME/dotfiles"
+    git clone https://github.com/vrdq/dotfiles.git "$HOME/dotfiles"
+    cd "$HOME/dotfiles"
+    if [ -e /dev/tty ]; then
+        exec ./install.sh "$@" </dev/tty
+    else
+        exec ./install.sh "$@"
+    fi
+fi
+
 BACKUP_BASE="$HOME/.dotfiles-backup"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 BACKUP_DIR="$BACKUP_BASE/backup-$TIMESTAMP"
@@ -31,8 +50,8 @@ print_banner() {
    \ V / |   /| |) | (_) |\__ \   | |) | (_) | | | | _| | || |__| _|\__ \
     \_/  |_|_\|___/ \__\_\|___/   |___/ \___/  |_| |_| |___|____|___|___/
 BANNER
-    echo -e "${CYAN}Personal Hyprland & DankMaterialShell Dotfiles Suite${NC}"
-    echo -e "${BLUE}Repo:${NC} $REPO_DIR"
+    echo -e "${CYAN}Hyprland & DankMaterialShell Desktop Setup${NC}"
+    echo -e "${BLUE}Source:${NC} $REPO_DIR"
     echo ""
 }
 
@@ -41,16 +60,16 @@ show_help() {
 Usage: ./install.sh [OPTIONS]
 
 Options:
-  -y, --yes        Non-interactive mode (automatically proceed without confirmation)
+  -y, --yes        Non-interactive mode (automatically install packages and proceed)
   -n, --dry-run    Preview all changes without touching any files or links
   -h, --help       Show this help message
 
-Features & Safety:
-  • Zero-data-loss: All existing conflicting files are backed up to ~/.dotfiles-backup/
-  • Generates an instant 'rollback.sh' inside the backup folder to undo any changes
-  • Universal display fallback: never black-screens on unknown monitor outputs
-  • Dynamic GPU detection: ensures NVIDIA vs AMD/Intel drivers never conflict
-  • Automatic templating: substitutes user home paths dynamically
+Features:
+  • Auto-installs Hyprland, DMS, Kitty, Fish, and utilities on Arch/CachyOS
+  • Backs up existing configs to ~/.dotfiles-backup/ with one-command rollback
+  • Pre-configures display manager so you can reboot directly into Hyprland
+  • Universal display auto-detection (no black screens on different monitors)
+  • Dynamic GPU detection (safe on Intel, AMD, and NVIDIA)
 HELP
 }
 
@@ -77,60 +96,86 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Pre-flight package detection
-check_dependencies() {
-    echo -e "${BOLD}Checking system prerequisites...${NC}"
-    
-    local core_deps=("hyprland" "kitty" "dms")
-    local recommended_deps=("fish" "fastfetch" "btop" "cava" "easyeffects" "qt5ct" "qt6ct" "grim" "slurp" "wl-copy" "powerprofilesctl" "eza")
-    local missing_core=()
-    local missing_rec=()
+read_user() {
+    local prompt="$1"
+    local default_val="$2"
+    local var_name="$3"
+    local response=""
 
-    for cmd in "${core_deps[@]}"; do
-        if ! command -v "$cmd" >/dev/null 2>&1; then
-            missing_core+=("$cmd")
-        fi
-    done
-
-    for cmd in "${recommended_deps[@]}"; do
-        if ! command -v "$cmd" >/dev/null 2>&1; then
-            missing_rec+=("$cmd")
-        fi
-    done
-
-    if [[ ${#missing_core[@]} -eq 0 ]]; then
-        echo -e "  [${GREEN}✓${NC}] Core desktop components found"
+    if [ -t 0 ]; then
+        read -rp "$prompt" response || true
+    elif [ -e /dev/tty ]; then
+        read -rp "$prompt" response </dev/tty || true
     else
-        echo -e "  [${YELLOW}!${NC}] Missing core components: ${YELLOW}${missing_core[*]}${NC}"
-        echo -e "      (Dotfiles can still be installed, but install these packages for full functionality)"
+        response="$default_val"
     fi
-
-    if [[ ${#missing_rec[@]} -gt 0 ]]; then
-        echo -e "  [${BLUE}i${NC}] Optional recommended utilities not installed: ${missing_rec[*]}"
-    fi
-    echo ""
+    response="${response:-$default_val}"
+    eval "$var_name=\"$response\""
 }
 
-# Confirm before proceeding if interactive
-confirm_run() {
-    if [ "$DRY_RUN" = true ]; then
-        echo -e "${YELLOW}Running in DRY-RUN mode. No files will be modified or created.${NC}\n"
+# 1. Package Installation for Arch / CachyOS systems (e.g. running from KDE)
+install_packages() {
+    if [ "$DRY_RUN" = true ]; then return; fi
+    if ! command -v pacman >/dev/null 2>&1; then
+        echo -e "${YELLOW}Non-pacman distribution detected. Please ensure Hyprland and DMS are installed manually.${NC}\n"
         return
     fi
 
-    if [ "$ASSUME_YES" = false ]; then
-        echo -e "${BOLD}The installer will:${NC}"
-        echo -e "  1. Back up existing conflicting configuration files to:"
-        echo -e "     ${CYAN}$BACKUP_DIR${NC}"
-        echo -e "  2. Link dotfiles to ~/.config, ~/.local/share, and ~/.local/bin"
-        echo -e "  3. Generate an instant ${GREEN}rollback.sh${NC} to undo changes at any time"
-        echo ""
-        read -rp "Proceed with installation? [y/N] " response
-        if [[ ! "$response" =~ ^[yY]([eE][sS])?$ ]]; then
-            echo -e "${YELLOW}Installation aborted by user.${NC}"
-            exit 0
+    local required_pkgs=(
+        hyprland
+        dms-shell-hyprland
+        hyprpaper
+        hyprpolkitagent
+        xdg-desktop-portal-hyprland
+        kitty
+        fish
+        fastfetch
+        btop
+        cava
+        eza
+        wl-clipboard
+        wl-clip-persist
+        qt5ct
+        qt6ct
+        ttf-jetbrains-mono-nerd
+        power-profiles-daemon
+        gcc
+        make
+        pkgconf
+        gtk3
+        gtk-layer-shell
+    )
+
+    local missing=()
+    for pkg in "${required_pkgs[@]}"; do
+        if ! pacman -Q "$pkg" >/dev/null 2>&1; then
+            missing+=("$pkg")
         fi
-        echo ""
+    done
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo -e "${BOLD}Missing desktop packages detected (${#missing[@]} to install):${NC}"
+        echo -e "  ${CYAN}${missing[*]}${NC}\n"
+
+        local do_install="y"
+        if [ "$ASSUME_YES" = false ]; then
+            read_user "Install missing packages now via pacman? [Y/n] " "y" do_install
+        fi
+
+        if [[ ! "$do_install" =~ ^[nN] ]]; then
+            echo -e "\n${BOLD}Installing packages with sudo pacman...${NC}"
+            sudo pacman -S --needed --noconfirm "${missing[@]}"
+            echo -e "${GREEN}✓ Packages installed successfully.${NC}\n"
+
+            # Enable power-profiles-daemon service if installed
+            if command -v systemctl >/dev/null 2>&1; then
+                sudo systemctl enable --now power-profiles-daemon.service 2>/dev/null || true
+            fi
+        else
+            echo -e "${YELLOW}Skipping package install. Some features will not work until packages are installed.${NC}\n"
+        fi
+    else
+        echo -e "  [${GREEN}✓${NC}] All core desktop packages are installed.\n"
     fi
 }
 
@@ -192,7 +237,7 @@ install_file() {
 
     # Record and backup existing target
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
-        # Check if already pointing to source
+        # If already pointing to source, skip
         if [ -L "$target_path" ] && [ "$(readlink -f "$target_path")" = "$(readlink -f "$source_path")" ]; then
             return
         fi
@@ -216,13 +261,42 @@ install_file() {
     fi
 }
 
+# Pre-configure SDDM so Hyprland is selected as default session
+configure_display_manager() {
+    if [ "$DRY_RUN" = true ]; then return; fi
+
+    # Check for SDDM (standard on KDE)
+    if [ -d /var/lib/sddm ]; then
+        if sudo -n true 2>/dev/null || [ "$ASSUME_YES" = true ]; then
+            if [ -f /var/lib/sddm/state.conf ]; then
+                sudo sed -i 's|^Session=.*|Session=/usr/share/wayland-sessions/hyprland.desktop|' /var/lib/sddm/state.conf 2>/dev/null || true
+            else
+                echo -e "[Last]\nSession=/usr/share/wayland-sessions/hyprland.desktop" | sudo tee /var/lib/sddm/state.conf >/dev/null 2>&1 || true
+            fi
+        fi
+    fi
+}
+
 main() {
     print_banner
-    check_dependencies
-    confirm_run
-    init_backup
+    install_packages
 
-    echo -e "${BOLD}Installing configuration files...${NC}"
+    if [ "$ASSUME_YES" = false ] && [ "$DRY_RUN" = false ]; then
+        echo -e "${BOLD}Ready to deploy dotfiles:${NC}"
+        echo -e "  • Backs up conflicting configs to ${CYAN}$BACKUP_DIR${NC}"
+        echo -e "  • Links Hyprland, DMS, Kitty, Fish, and GTK/Qt themes"
+        echo -e "  • Builds custom Wayland crosshair overlay"
+        local confirm="y"
+        read_user "Proceed with dotfiles setup? [Y/n] " "y" confirm
+        if [[ "$confirm" =~ ^[nN] ]]; then
+            echo -e "${YELLOW}Installation aborted.${NC}"
+            exit 0
+        fi
+        echo ""
+    fi
+
+    init_backup
+    echo -e "${BOLD}Deploying configuration files...${NC}"
 
     # 1. Install .config files
     while IFS= read -r -d '' source_file; do
@@ -267,7 +341,7 @@ main() {
         install_file "$REPO_DIR/wallpapers/Windows11-Twilight-dank-monochrome.png" "$HOME/.config/hypr/wallpaper.png"
     fi
 
-    # 6. Build crosshair binary if C source and build tools are present
+    # 6. Build crosshair overlay binary
     if [ -d "$REPO_DIR/src/crosshair" ] && [ "$DRY_RUN" = false ]; then
         if command -v gcc >/dev/null 2>&1 && command -v pkg-config >/dev/null 2>&1; then
             if pkg-config --exists gtk+-3.0 gtk-layer-shell-0 2>/dev/null; then
@@ -278,17 +352,31 @@ main() {
         fi
     fi
 
-    # 7. Update desktop application cache if update-desktop-database exists
+    # 7. Update desktop application database
     if command -v update-desktop-database >/dev/null 2>&1 && [ "$DRY_RUN" = false ]; then
         update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
     fi
+
+    # 8. Configure display manager preselection
+    configure_display_manager
 
     echo ""
     if [ "$DRY_RUN" = false ]; then
         echo -e "${GREEN}${BOLD}✓ Dotfiles installation completed successfully!${NC}"
         echo -e "  Backup saved to: ${CYAN}$BACKUP_DIR${NC}"
-        echo -e "  To restore previous configuration, run:"
-        echo -e "    ${BOLD}$BACKUP_DIR/rollback.sh${NC} (or ./uninstall.sh)"
+        echo -e "  To revert anytime: ${BOLD}./uninstall.sh${NC}\n"
+
+        echo -e "${BOLD}Next steps:${NC}"
+        echo -e "  1. Reboot your computer"
+        echo -e "  2. On your login screen (SDDM/greetd), ensure ${GREEN}Hyprland${NC} is chosen as the session"
+        echo -e "  3. Log in to enjoy the Hyprland + DankMaterialShell setup!\n"
+
+        local do_reboot="n"
+        read_user "Would you like to reboot now? [y/N] " "n" do_reboot
+        if [[ "$do_reboot" =~ ^[yY]([eE][sS])?$ ]]; then
+            echo -e "${GREEN}Rebooting...${NC}"
+            systemctl reboot
+        fi
     fi
 }
 
