@@ -1,0 +1,24 @@
+[Desktop Entry]
+Name=Crosshair Overlay
+GenericName=Screen Crosshair
+Comment=Screen crosshair overlay utility for desktop and games
+Exec=crosshair-gui
+Icon=crosshair
+Terminal=false
+Type=Application
+Categories=Game;Utility;
+Keywords=crosshair;overlay;cs2;green dot;reticle;aim;fps;
+StartupNotify=true
+Actions=Toggle;Start;Stop;
+
+[Desktop Action Toggle]
+Name=Toggle Crosshair
+Exec=crosshair toggle
+
+[Desktop Action Start]
+Name=Enable Crosshair
+Exec=crosshair start
+
+[Desktop Action Stop]
+Name=Disable Crosshair
+Exec=crosshair stop

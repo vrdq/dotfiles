@@ -1,22 +1,21 @@
-# Secrets and machine-local state
-.env*
-*.pem
-*.key
-*.crt
-*.log
-*history*
-*.backup*
-
-# Runtime/cache data
-.cache/
-.local/state/
-**/Cache/
-**/CachedData/
-**/cache/
-**/.dms-backups/
-
-# Editor/OS files
+# Operating system and editor artifacts
+*~
+*.swp
+*.swo
 .DS_Store
-.idea/
-.vscode/
+__pycache__/
+*.pyc
+*.bak*
 
+# Machine-local overrides (safe place for personal tweaks without git diffs)
+*.local.lua
+*.local.conf
+monitors.local.lua
+
+# Build products
+src/crosshair/crosshair
+
+# Session & universal variable caches
+fish_variables
+.dms-backups/
+.cursor_version

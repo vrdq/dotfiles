@@ -1,0 +1,19 @@
+# ~/.blerc — ble.sh configuration
+
+# ── Autosuggestion: exactly fish's brblack (dark gray ghost text) ─────────────
+# fish uses 'brblack' = ANSI color 8 = dark gray
+ble-color-defface auto_complete fg=8,bg=default
+
+# Disable bracketed paste mode so pasted newlines execute immediately
+function ble/term/bracketed-paste-mode/enter { :; }
+function ble/term/bracketed-paste-mode/leave { :; }
+
+# Force Enter to execute commands immediately instead of inserting newlines
+function blerc/keymap-load-hook {
+  ble-bind -f 'C-m' accept-line
+  ble-bind -f 'RET' accept-line
+}
+blehook/eval-after-load keymap_emacs blerc/keymap-load-hook
+blehook/eval-after-load keymap_vi blerc/keymap-load-hook
+
+

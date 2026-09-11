@@ -1,4 +1,5 @@
-package.path = package.path .. ";/home/vrdq/.config/hypr/?.lua;/home/vrdq/.config/hypr/?/init.lua"
+local home = os.getenv("HOME") or "/home/" .. (os.getenv("USER") or "user")
+package.path = package.path .. ";" .. home .. "/.config/hypr/?.lua;" .. home .. "/.config/hypr/?/init.lua"
 -- Hyprland configuration — Clean & Polished
 -- https://wiki.hypr.land/Configuring/Start/
 
@@ -133,8 +134,10 @@ hl.config({
     },
 })
 
--- Keep the mixed-refresh desktop deterministic: the external panel is 60 Hz,
--- while the laptop panel remains at its native 144 Hz.
+-- Safe universal monitor fallback (ensures desktop never black-screens on unknown monitors)
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+
+-- Multi-monitor profile (mixed-refresh laptop + HDMI panel)
 hl.monitor({ output = "eDP-1", mode = "1920x1080@144", position = "0x0", scale = 1, vrr = 1 })
 hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@74.97", position = "1920x0", scale = 1, vrr = 0 })
 
@@ -284,7 +287,7 @@ hl.config({
         ["col.inactive_border"] = "rgba(33333318)",
     },
     cursor = {
-        default_monitor = "eDP-1",
+        default_monitor = "",
     },
     decoration = {
         rounding = 7,
@@ -306,6 +309,9 @@ hl.config({
         "noblur, class:^(nvim)$",
         "tile, class:^(Antigravity|antigravity)$",
         "opaque, class:^(Antigravity|antigravity)$",
+        "float, title:^(Screen Crosshair)$",
+        "size 480 620, title:^(Screen Crosshair)$",
+        "move 80 120, title:^(Screen Crosshair)$",
     }
 })
 

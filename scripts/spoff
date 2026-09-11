@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# spoff - Spotify TUI launcher wrapper
+if [ -x "$HOME/spot-tui/.venv/bin/spoff" ]; then
+    exec "$HOME/spot-tui/.venv/bin/spoff" "$@"
+elif command -v spoff-bin >/dev/null 2>&1; then
+    exec spoff-bin "$@"
+else
+    echo "spoff (Spotify TUI) is not installed." >&2
+    echo "Visit https://github.com/vrdq/spoff to install." >&2
+    exit 1
+fi

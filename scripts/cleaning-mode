@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Cleaning Mode for Laptop Keyboard & Touchpad
+# Temporarily disables inputs so you can wipe down and clean your laptop safely.
+
+DURATION=${1:-60}
+
+# Discover internal laptop keyboards and touchpads dynamically from Hyprland
+get_targets() {
+    if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+        hyprctl devices -j 2>/dev/null | jq -r '.keyboards[].name, .mice[].name' 2>/dev/null | grep -iE 'touchpad|at-translated|ite-device|internal|laptop' || true
+    fi
+}
+
+TARGETS=$(get_targets)
+# If dynamic query is empty, fallback to known common names
+if [ -z "$TARGETS" ]; then
+    TARGETS="at-translated-set-2-keyboard
+elan06fa:00-04f3:327e-touchpad
+elan06fa:00-04f3:327e-mouse"
+fi
+
+set_device_state() {
+    local state="$1"
+    while IFS= read -r dev; do
+        [ -z "$dev" ] && continue
+        hyprctl eval "hl.device({ name = \"$dev\", enabled = $state })" >/dev/null 2>&1 || true
+    done <<< "$TARGETS"
+}
+
+restore_inputs() {
+    set_device_state true
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -u normal -t 3000 "✨ Cleaning Mode Finished" "Keyboard & Touchpad re-enabled!"
+    fi
+}
+
+trap restore_inputs EXIT INT TERM
+
+set_device_state false
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send -u critical -t 5000 "🧹 Cleaning Mode Active" "Keyboard & Touchpad disabled for ${DURATION}s.\nWipe down and clean safely!"
+fi
+
+for ((i=DURATION; i>0; i--)); do
+    sleep 1
+done

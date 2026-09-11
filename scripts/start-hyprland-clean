@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Hyprland session launcher with automatic GPU vendor detection
+# Ensures smooth compositor launch without driver collisions on Intel/AMD/NVIDIA systems.
+
+# Reset any TUI styling before Hyprland takes over the virtual terminal
+printf '\033[0m\033[2J\033[H'
+
+# Detect GPU vendor
+is_nvidia=false
+if command -v lspci >/dev/null 2>&1; then
+    if lspci | grep -iE 'vga|3d|display' | grep -iq 'nvidia'; then
+        is_nvidia=true
+    fi
+elif [ -e /proc/driver/nvidia/version ]; then
+    is_nvidia=true
+fi
+
+if [ "$is_nvidia" = true ]; then
+    # Dynamically select DRM device if not already specified
+    if [ -z "$AQ_DRM_DEVICES" ]; then
+        for card in /dev/dri/card*; do
+            if [ -e "$card" ]; then
+                export AQ_DRM_DEVICES="$card"
+                break
+            fi
+        done
+    fi
+    export LIBVA_DRIVER_NAME=nvidia
+    export NVD_BACKEND=direct
+    export MOZ_DISABLE_RDD_SANDBOX=1
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    export __GL_GSYNC_ALLOWED=1
+    export __GL_VRR_ALLOWED=1
+    export __GL_SHADER_DISK_CACHE=1
+    export __GL_SHADER_DISK_CACHE_SIZE=10737418240
+    export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+fi
+
+exec /usr/bin/start-hyprland "$@"
