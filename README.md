@@ -12,7 +12,7 @@ Includes an installer that backs up existing configurations before linking, alon
 - **Shells**: Fish with custom prompt and `eza` aliases; Bash configured with `ble.sh` autosuggestions.
 - **Editor**: Neovim with LazyVim and automatic DMS theme synchronization (`colors/dms.lua`).
 - **Crosshair Overlay**: Custom C + GTK layer-shell crosshair (`src/crosshair`) and Qt configuration panel (`crosshair-gui`).
-- **Scripts**: Laptop cleaning mode (temporarily locks inputs for 60s), screenshot capture to clipboard, GPU detection launcher, and power profile toggle.
+- **Scripts**: Screenshot capture to clipboard, GPU detection launcher, and power profile toggle.
 
 ## Installation
 
@@ -57,7 +57,6 @@ The installer will not overwrite existing configurations blindly:
 | `Super + S` | Spoff (Spotify TUI) |
 | `Super + Shift + X` | Toggle screen crosshair |
 | `Ctrl + Q` | Toggle power profile (Balanced / Performance) |
-| `Super + Shift + C` | Keyboard cleaning mode (60s input lock) |
 | `Super + Tab` | Show / restore desktop |
 | `Super + A` | Unminimize last window |
 | `Print` | Interactive area screenshot to clipboard |
