@@ -616,13 +616,13 @@ class CrosshairSettingsDialog(QDialog):
     def update_status(self):
         is_running, pid = get_process_status()
         if is_running:
-            self.lbl_status_title.setText("● Crosshair Overlay: Active")
+            self.lbl_status_title.setText("Crosshair Overlay: Active")
             self.lbl_status_desc.setText(f"Daemon PID {pid} • Hotkey: Super + Alt + C")
             self.btn_toggle.setText("Stop Crosshair")
             if QIcon.hasThemeIcon("process-stop"):
                 self.btn_toggle.setIcon(QIcon.fromTheme("process-stop"))
         else:
-            self.lbl_status_title.setText("○ Crosshair Overlay: Inactive")
+            self.lbl_status_title.setText("Crosshair Overlay: Inactive")
             self.lbl_status_desc.setText("Click to start overlay • Hotkey: Super + Alt + C")
             self.btn_toggle.setText("Start Crosshair")
             if QIcon.hasThemeIcon("media-playback-start"):
