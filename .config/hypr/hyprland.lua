@@ -217,19 +217,6 @@ hl.window_rule({
     center = true,
 })
 
--- Keep big apps tiled
-hl.window_rule({ match = { class = "^(spotify)$" }, tile = true })
-hl.window_rule({ match = { class = "^(vesktop)$" }, tile = true })
-hl.window_rule({ match = { class = "^(discord)$" }, tile = true })
-hl.window_rule({ match = { class = "^(librewolf)$" }, tile = true })
-
--- Steam
-hl.window_rule({
-    match = { class = "^(steam)$", title = "^(notificationtoasts)" },
-    no_initial_focus = true,
-    pin = true,
-})
-
 -- Suppress animation on DMS overlay
 hl.layer_rule({ match = { namespace = "^(quickshell)$" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "^dms:.*" }, no_anim = true })
@@ -289,15 +276,9 @@ hl.config({
         "opacity 0.85 0.85, class:^(kitty)$",
         "noblur, class:^(kitty)$",
         "noblur, class:^(nvim)$",
-        "tile, class:^(Antigravity|antigravity)$",
         "opaque, class:^(Antigravity|antigravity)$",
     }
 })
-
--- ========================================
--- GAMING ZERO-LATENCY DIRECT PRESENTATION
--- ========================================
-hl.window_rule({ match = { class = "^(Minecraft.*|minecraft.*|net-minecraft-launcher|org\\.prismlauncher\\.PrismLauncher|steam_app_.*|cs2|hl2)$" }, immediate = true, no_anim = true, idle_inhibit = "focus" })
 
 -- HyprMod managed settings
 pcall(require, "hyprland-gui")
