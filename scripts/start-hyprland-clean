@@ -16,14 +16,29 @@ elif [ -e /proc/driver/nvidia/version ]; then
 fi
 
 if [ "$is_nvidia" = true ]; then
-    # Dynamically select DRM device if not already specified
-    if [ -z "$AQ_DRM_DEVICES" ]; then
-        for card in /dev/dri/card*; do
-            if [ -e "$card" ]; then
-                export AQ_DRM_DEVICES="$card"
+    # The text greeter can run before NVIDIA is ready. Wait here so an early
+    # login cannot launch Hyprland against the temporary simpledrm framebuffer.
+    nvidia_card=""
+    for ((attempt = 0; attempt < 200; attempt++)); do
+        for card in /sys/class/drm/card[0-9]*; do
+            [ -f "$card/device/vendor" ] || continue
+            read -r vendor < "$card/device/vendor" || continue
+            if [[ "$vendor" == "0x10de" && -c "/dev/dri/${card##*/}" ]]; then
+                nvidia_card="/dev/dri/${card##*/}"
                 break
             fi
         done
+        [ -n "$nvidia_card" ] && break
+        sleep 0.05
+    done
+    if [ -z "$nvidia_card" ]; then
+        echo "NVIDIA graphics did not become ready within 10 seconds. Try logging in again; if it repeats, check journalctl -b -k for NVIDIA errors." >&2
+        exit 1
+    fi
+
+    # Dynamically select DRM device if not already specified
+    if [ -z "$AQ_DRM_DEVICES" ]; then
+        export AQ_DRM_DEVICES="$nvidia_card"
     fi
     export LIBVA_DRIVER_NAME=nvidia
     export NVD_BACKEND=direct

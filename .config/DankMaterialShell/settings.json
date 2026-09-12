@@ -1,7 +1,7 @@
 {
   "currentThemeName": "custom",
   "currentThemeCategory": "registry",
-  "customThemeFile": "__HOME__/.config/DankMaterialShell/themes/oxocarbon/theme.json",
+  "customThemeFile": "/home/vrdq/.config/DankMaterialShell/themes/oxocarbon/theme.json",
   "registryThemeVariants": {
     "flexoki": "red",
     "amoledBlack": {

@@ -260,36 +260,73 @@ class CrosshairSettingsDialog(QDialog):
         root.setSpacing(10)
 
         # -------------------------------------------------------------
-        # Status Bar Header
+        # Primary Overlay Status & Control Card
         # -------------------------------------------------------------
-        status_bar = QHBoxLayout()
-        self.lbl_status = QLabel("Checking daemon status...")
-        self.btn_toggle = QPushButton("Enable")
+        status_card = QFrame()
+        status_card.setFrameShape(QFrame.Shape.StyledPanel)
+        status_card.setFrameShadow(QFrame.Shadow.Raised)
+        status_layout = QHBoxLayout(status_card)
+        status_layout.setContentsMargins(14, 12, 14, 12)
+        status_layout.setSpacing(16)
+
+        status_info = QVBoxLayout()
+        status_info.setSpacing(3)
+
+        self.lbl_status_title = QLabel("Crosshair Overlay")
+        font_title = self.lbl_status_title.font()
+        font_title.setBold(True)
+        font_title.setPointSize(font_title.pointSize() + 1)
+        self.lbl_status_title.setFont(font_title)
+
+        self.lbl_status_desc = QLabel("Checking daemon status...")
+        status_info.addWidget(self.lbl_status_title)
+        status_info.addWidget(self.lbl_status_desc)
+
+        self.btn_toggle = QPushButton("Start Crosshair")
+        if QIcon.hasThemeIcon("media-playback-start"):
+            self.btn_toggle.setIcon(QIcon.fromTheme("media-playback-start"))
+        self.btn_toggle.setMinimumHeight(38)
+        self.btn_toggle.setMinimumWidth(150)
+        font_btn = self.btn_toggle.font()
+        font_btn.setBold(True)
+        self.btn_toggle.setFont(font_btn)
+        self.btn_toggle.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_toggle.clicked.connect(self.on_toggle_clicked)
-        status_bar.addWidget(self.lbl_status)
-        status_bar.addStretch()
-        status_bar.addWidget(self.btn_toggle)
-        root.addLayout(status_bar)
+
+        status_layout.addLayout(status_info)
+        status_layout.addStretch()
+        status_layout.addWidget(self.btn_toggle)
+        root.addWidget(status_card)
 
         # -------------------------------------------------------------
-        # Preview Box
+        # Preview Box & Quick Actions
         # -------------------------------------------------------------
         preview_container = QHBoxLayout()
         self.canvas = PreviewWidget()
         self.canvas.set_config(self.cfg)
 
         bg_box = QVBoxLayout()
+        bg_box.setSpacing(8)
         bg_box.addStretch()
+
         bg_label = QLabel("Preview Background:")
         self.combo_bg = QComboBox()
         self.combo_bg.addItems(["Dark", "Light", "Checkerboard"])
         self.combo_bg.currentIndexChanged.connect(self.on_bg_changed)
         bg_box.addWidget(bg_label)
         bg_box.addWidget(self.combo_bg)
+
+        btn_reload = QPushButton("Reload Daemon")
+        if QIcon.hasThemeIcon("view-refresh"):
+            btn_reload.setIcon(QIcon.fromTheme("view-refresh"))
+        btn_reload.setToolTip("Reload configuration in active crosshair process")
+        btn_reload.clicked.connect(self.on_reload_clicked)
+        bg_box.addWidget(btn_reload)
+
         bg_box.addStretch()
 
         preview_container.addWidget(self.canvas)
-        preview_container.addSpacing(12)
+        preview_container.addSpacing(14)
         preview_container.addLayout(bg_box)
         preview_container.addStretch()
         root.addLayout(preview_container)
@@ -579,15 +616,25 @@ class CrosshairSettingsDialog(QDialog):
     def update_status(self):
         is_running, pid = get_process_status()
         if is_running:
-            self.lbl_status.setText(f"Daemon Status: <b>Running</b> (PID {pid})")
-            self.btn_toggle.setText("Stop Daemon")
+            self.lbl_status_title.setText("● Crosshair Overlay: Active")
+            self.lbl_status_desc.setText(f"Daemon PID {pid} • Hotkey: Super + Alt + C")
+            self.btn_toggle.setText("Stop Crosshair")
+            if QIcon.hasThemeIcon("process-stop"):
+                self.btn_toggle.setIcon(QIcon.fromTheme("process-stop"))
         else:
-            self.lbl_status.setText("Daemon Status: <b>Stopped</b>")
-            self.btn_toggle.setText("Start Daemon")
+            self.lbl_status_title.setText("○ Crosshair Overlay: Inactive")
+            self.lbl_status_desc.setText("Click to start overlay • Hotkey: Super + Alt + C")
+            self.btn_toggle.setText("Start Crosshair")
+            if QIcon.hasThemeIcon("media-playback-start"):
+                self.btn_toggle.setIcon(QIcon.fromTheme("media-playback-start"))
 
     def on_toggle_clicked(self):
         subprocess.run(["crosshair", "toggle"])
         QTimer.singleShot(250, self.update_status)
+
+    def on_reload_clicked(self):
+        subprocess.run(["crosshair", "reload"])
+        self.update_status()
 
     def copy_text(self, text, button):
         QApplication.clipboard().setText(text)
