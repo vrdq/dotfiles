@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 # spoff - Spotify TUI launcher wrapper
+
+if [ "$1" = "dev" ]; then
+    shift
+    cd "$HOME/spoff" 2>/dev/null || cd "$HOME/spot-tui" 2>/dev/null || true
+    exec agy --conversation a41e34e9-3e15-4ff8-b334-15ca4d726cd8 "$@"
+fi
+
 if [ -x "$HOME/spot-tui/.venv/bin/spoff" ]; then
     exec "$HOME/spot-tui/.venv/bin/spoff" "$@"
 elif command -v spoff-bin >/dev/null 2>&1; then
