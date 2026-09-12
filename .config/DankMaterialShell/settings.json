@@ -31,7 +31,9 @@
   "cornerRadius": 8,
   "hyprlandLayoutGapsOverride": 4,
   "hyprlandLayoutRadiusOverride": 12,
+  "firstDayOfWeek": 0,
   "clockFormat": "12h",
+  "useFahrenheit": true,
   "animationSpeed": 4,
   "customAnimationDuration": 151,
   "syncComponentAnimationSpeeds": false,
@@ -66,13 +68,12 @@
       "width": 50
     },
     {
-      "id": "idleInhibitor",
+      "id": "builtin_tailscale",
       "enabled": true,
       "width": 50
     }
   ],
   "waveProgressEnabled": false,
-  "scrollTitleEnabled": false,
   "trayAutoOverflow": false,
   "trayPopupSingleLine": false,
   "trayMaxVisibleItems": 99,
@@ -107,7 +108,7 @@
     },
     {
       "id": "settings",
-      "enabled": true
+      "enabled": false
     }
   ],
   "networkPreference": "wifi",
@@ -161,7 +162,6 @@
   "notificationHistorySaveNormal": false,
   "notificationHistorySaveCritical": false,
   "notificationDndAllowCritical": false,
-  "osdMediaPlaybackEnabled": true,
   "osdPowerProfileEnabled": true,
   "powerMenuActions": [
     "reboot",
