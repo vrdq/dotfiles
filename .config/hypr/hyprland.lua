@@ -217,17 +217,6 @@ hl.window_rule({
     center = true,
 })
 
--- Float small/utility windows
-hl.window_rule({ match = { class = "^(org\\.gnome\\.Calculator)$" }, float = true })
-hl.window_rule({ match = { class = "^(gnome-calculator)$" }, float = true })
-hl.window_rule({ match = { class = "^(galculator)$" }, float = true })
-hl.window_rule({ match = { class = "^(blueman-manager)$" }, float = true, size = "700 450" })
-hl.window_rule({ match = { class = "^(org\\.gnome\\.Nautilus)$" }, float = true, size = "900 600" })
-hl.window_rule({ match = { class = "^(xdg-desktop-portal)$" }, float = true })
-hl.window_rule({ match = { class = "^(pavucontrol)$" }, float = true, size = "800 500" })
-hl.window_rule({ match = { class = "^(nm-connection-editor)$" }, float = true })
-hl.window_rule({ match = { class = "^(zoom)$" }, float = true })
-
 -- Keep big apps tiled
 hl.window_rule({ match = { class = "^(spotify)$" }, tile = true })
 hl.window_rule({ match = { class = "^(vesktop)$" }, tile = true })
@@ -238,13 +227,6 @@ hl.window_rule({ match = { class = "^(librewolf)$" }, tile = true })
 hl.window_rule({
     match = { class = "^(steam)$", title = "^(notificationtoasts)" },
     no_initial_focus = true,
-    pin = true,
-})
-
--- Firefox / LibreWolf Picture-in-Picture
-hl.window_rule({
-    match = { class = "^(firefox|librewolf)$", title = "^(Picture-in-Picture)$" },
-    float = true,
     pin = true,
 })
 
@@ -309,9 +291,6 @@ hl.config({
         "noblur, class:^(nvim)$",
         "tile, class:^(Antigravity|antigravity)$",
         "opaque, class:^(Antigravity|antigravity)$",
-        "float, title:^(Screen Crosshair)$",
-        "size 480 620, title:^(Screen Crosshair)$",
-        "move 80 120, title:^(Screen Crosshair)$",
     }
 })
 
