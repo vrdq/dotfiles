@@ -2,7 +2,7 @@
 shape = dot
 size = 4.0
 color = #00FF00
-outline = 1.0
+outline = 0.0
 outline_color = #000000
 opacity = 1.00
 offset_x = 0
