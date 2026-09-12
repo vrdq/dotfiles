@@ -35,11 +35,11 @@
   "clockFormat": "12h",
   "useFahrenheit": true,
   "animationSpeed": 4,
-  "customAnimationDuration": 151,
-  "syncComponentAnimationSpeeds": false,
-  "popoutCustomAnimationDuration": 149,
+  "customAnimationDuration": 200,
+  "popoutCustomAnimationDuration": 400,
   "springBounce": 0,
   "enableRippleEffects": false,
+  "m3ElevationEnabled": false,
   "controlCenterShowMicPercent": true,
   "controlCenterWidgets": [
     {

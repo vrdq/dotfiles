@@ -141,17 +141,17 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 hl.monitor({ output = "eDP-1", mode = "1920x1080@144", position = "0x0", scale = 1, vrr = 1 })
 hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@74.97", position = "1920x0", scale = 1, vrr = 0 })
 
--- Original animation set, restored from the pre-optimization backup.
-hl.animation({ leaf = "global",      enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsOut",  enabled = true, speed = 2,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "fade",        enabled = true, speed = 3,   bezier = "default" })
-hl.animation({ leaf = "border",      enabled = true, speed = 5,   bezier = "default" })
+-- Harmonized 400ms animation set (matching workspace switch & dwindle tile gliding).
+hl.animation({ leaf = "global",      enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4, bezier = "default", style = "popin 80%" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 4, bezier = "default", style = "popin 80%" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "fade",        enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "border",      enabled = true, speed = 4, bezier = "default" })
 -- Borders are disabled below; do not keep an invisible animation running every frame.
 hl.animation({ leaf = "borderangle", enabled = false, speed = 100, bezier = "linear", style = "loop" })
-hl.animation({ leaf = "workspaces",  enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "layers",      enabled = true, speed = 3,   bezier = "default" })
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "layers",      enabled = true, speed = 4, bezier = "default" })
 
 -- ========================================
 -- DWINDLE TILING (vanilla)
