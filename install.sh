@@ -25,8 +25,16 @@ if [ ! -d "$REPO_DIR/.config" ]; then
         echo -e "${RED}Error: git is required. Install with: sudo pacman -S git${NC}"
         exit 1
     fi
-    rm -rf "$HOME/dotfiles"
-    git clone https://github.com/vrdq/dotfiles.git "$HOME/dotfiles"
+    if [ -d "$HOME/dotfiles/.git" ]; then
+        echo -e "${CYAN}Existing dotfiles repository found. Updating to latest...${NC}"
+        git -C "$HOME/dotfiles" pull origin main || true
+    elif [ -d "$HOME/dotfiles" ]; then
+        echo -e "${YELLOW}Existing non-git ~/dotfiles directory found. Backing up...${NC}"
+        mv "$HOME/dotfiles" "$HOME/dotfiles.bak.$(date +%s)"
+        git clone https://github.com/vrdq/dotfiles.git "$HOME/dotfiles"
+    else
+        git clone https://github.com/vrdq/dotfiles.git "$HOME/dotfiles"
+    fi
     cd "$HOME/dotfiles"
     if [ -e /dev/tty ]; then
         exec ./install.sh "$@" </dev/tty

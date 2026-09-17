@@ -16,16 +16,16 @@ Includes an installer that backs up existing configurations before linking, alon
 
 ## Installation
 
-Open a terminal (like Konsole in KDE) and run:
-
-```bash
-git clone https://github.com/vrdq/dotfiles.git ~/dotfiles && cd ~/dotfiles && ./install.sh
-```
-
-Or run directly via curl:
+Open a terminal (like Konsole in KDE) and run the one-line installer:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vrdq/dotfiles/main/install.sh | bash
+```
+
+Or via git (automatically pulls if `~/dotfiles` already exists):
+
+```bash
+git clone https://github.com/vrdq/dotfiles.git ~/dotfiles 2>/dev/null || git -C ~/dotfiles pull origin main; cd ~/dotfiles && ./install.sh
 ```
 
 The installer will:
