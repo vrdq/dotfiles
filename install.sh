@@ -410,8 +410,11 @@ install_file() {
 
     # 3. Standard symlinked files
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
-        # If target already resolves to source, skip immediately to prevent circular symlinks
+        # If target already resolves to source, ensure link text is canonical (e.g. migrate from dank-dotfiles)
         if [ "$(readlink -f "$target_path" 2>/dev/null || true)" = "$(readlink -f "$source_path" 2>/dev/null || true)" ]; then
+            if [ -L "$target_path" ] && [ "$(readlink "$target_path" 2>/dev/null || true)" != "$source_path" ]; then
+                ln -snf -- "$source_path" "$target_path"
+            fi
             return
         fi
 
@@ -517,6 +520,13 @@ main() {
 
     init_backup
     echo -e "${BOLD}Deploying configuration files...${NC}"
+
+    # Maintain path compatibility for older rice checkouts (dank-dotfiles <-> dotfiles)
+    if [ "$REPO_DIR" = "$HOME/dotfiles" ] && [ ! -e "$HOME/dank-dotfiles" ]; then
+        ln -snf "$REPO_DIR" "$HOME/dank-dotfiles" 2>/dev/null || true
+    elif [ "$REPO_DIR" = "$HOME/dank-dotfiles" ] && [ ! -e "$HOME/dotfiles" ]; then
+        ln -snf "$REPO_DIR" "$HOME/dotfiles" 2>/dev/null || true
+    fi
 
     # 0. Migrate any legacy directory symlinks to real directories
     for pdir in .config .local/share; do
