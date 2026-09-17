@@ -105,3 +105,19 @@ Optional tools used by keybinds and helper scripts:
 - `gtk-layer-shell`, `gtk3` (to build the crosshair overlay)
 
 Missing optional packages are skipped gracefully without breaking your desktop session.
+
+## Shell and session checks
+
+Run `bash tests/check-shells.sh` to check shell syntax, noninteractive setup,
+PATH idempotence, Fish prompt/keybindings, and session argument forwarding.
+The launcher check uses a mock compositor; it does not restart the desktop.
+On NVIDIA machines it needs access to the real `/sys` and `/dev/dri` device
+nodes so the existing GPU-readiness guard can complete.
+
+Fish keeps its compact prompt in `functions/fish_prompt.fish`; interactive
+aliases and bindings are not initialized for scripts. Bash likewise skips
+terminal-only setup for noninteractive shells and avoids adding duplicate
+PATH entries. The session launcher reads PCI vendor/class attributes directly
+instead of spawning `lspci` and `grep`, while retaining the NVIDIA readiness
+wait and explicit `AQ_DRM_DEVICES` overrides. These reduce unnecessary setup
+work; they are not a measured reduction in whole-system boot time.

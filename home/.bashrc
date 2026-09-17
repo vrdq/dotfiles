@@ -1,14 +1,21 @@
 # ~/.bashrc - Bash configuration
 
+# Keep PATH available to login scripts without duplicating entries in nested shells.
+if [[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+if [[ -d "$HOME/.spicetify" && ":$PATH:" != *":$HOME/.spicetify:"* ]]; then
+    export PATH="$PATH:$HOME/.spicetify"
+fi
+
+# Aliases, line editing, history and prompts are only for interactive terminals.
+[[ $- == *i* ]] || return 0
+
 # ── ble.sh (fish-like syntax highlighting + autosuggestions) ─────────────────
 # Guarded so bash loads cleanly even if ble.sh is not installed
 if [[ $- == *i* && -f /usr/share/blesh/ble.sh ]]; then
     source /usr/share/blesh/ble.sh --noattach
 fi
-
-# ── Environment & PATH ────────────────────────────────────────────────────────
-[[ -d "$HOME/.local/bin" ]] && export PATH="$HOME/.local/bin:$PATH"
-[[ -d "$HOME/.spicetify" ]] && export PATH="$PATH:$HOME/.spicetify"
 
 # ── Colors & Aliases ──────────────────────────────────────────────────────────
 if command -v eza >/dev/null 2>&1; then
@@ -55,3 +62,5 @@ if [[ ${BLE_VERSION-} ]]; then
     done
     unset __f
 fi
+
+. "$HOME/.cargo/env"

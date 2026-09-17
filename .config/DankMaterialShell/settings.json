@@ -144,6 +144,7 @@
   "acSuspendBehavior": 1,
   "acProfileName": "1",
   "acPostLockMonitorTimeout": 300,
+  "batterySuspendBehavior": 1,
   "batteryProfileName": "0",
   "batteryChargeLimit": 80,
   "runDmsMatugenTemplates": false,
@@ -166,8 +167,7 @@
   "powerMenuActions": [
     "reboot",
     "logout",
-    "poweroff",
-    "suspend"
+    "poweroff"
   ],
   "powerMenuDefaultAction": "poweroff",
   "updaterIntervalSeconds": 86400,
@@ -181,10 +181,13 @@
         "name": "eDP-1",
         "model": "0x0C29"
       }
-    ]
+    ],
+    "toast": [],
+    "notepad": []
   },
   "showOnLastDisplay": {
-    "notifications": false
+    "notifications": false,
+    "toast": false
   },
   "barConfigs": [
     {

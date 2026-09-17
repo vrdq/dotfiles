@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Test double: never starts a compositor or alters the running desktop.
+printf 'GPU=%s\n' "${AQ_DRM_DEVICES-}"
+printf 'ARG=%s\n' "$@"

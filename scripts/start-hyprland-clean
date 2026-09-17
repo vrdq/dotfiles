@@ -5,15 +5,19 @@
 # Reset any TUI styling before Hyprland takes over the virtual terminal
 printf '\033[0m\033[2J\033[H'
 
-# Detect GPU vendor
+# Read PCI metadata directly: no lspci/grep processes or PCI name database scan.
 is_nvidia=false
-if command -v lspci >/dev/null 2>&1; then
-    if lspci | grep -iE 'vga|3d|display' | grep -iq 'nvidia'; then
+for pci_device in /sys/bus/pci/devices/*; do
+    [[ -r "$pci_device/vendor" && -r "$pci_device/class" ]] || continue
+    read -r vendor < "$pci_device/vendor" || continue
+    [[ "$vendor" == 0x10de ]] || continue
+    read -r device_class < "$pci_device/class" || continue
+    # PCI base class 03 covers VGA, 3D and other display controllers.
+    if [[ "$device_class" == 0x03* ]]; then
         is_nvidia=true
+        break
     fi
-elif [ -e /proc/driver/nvidia/version ]; then
-    is_nvidia=true
-fi
+done
 
 if [ "$is_nvidia" = true ]; then
     # The text greeter can run before NVIDIA is ready. Wait here so an early

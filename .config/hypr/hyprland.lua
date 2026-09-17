@@ -19,11 +19,9 @@ hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("HYPRCURSOR_SIZE", "20")
 -- Qt / Electron
 hl.env("QT_QPA_PLATFORM", "wayland")
-hl.env("QT_QPA_PLATFORMTHEME", "kde")
+hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 hl.env("QT_QPA_PLATFORMTHEME_QT6", "kde")
--- Keep native Qt title-bar controls available on Wayland.
--- Forcing this to 1 makes many Qt apps lose minimize/maximize/close UI.
-hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "0")
+hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hl.env("QT_ENABLE_HIGHDPI_SCALING", "1")
 hl.env("GTK_THEME", "Breeze-Dark")
@@ -247,6 +245,8 @@ hl.env("HYPRCURSOR_SIZE", "20")
 hl.env("XCURSOR_SIZE", "20")
 require("dms.binds")
 require("dms.binds-user")
+
+hl.bind("CTRL + ALT + Q", hl.dsp.exec_cmd("/usr/bin/python3 " .. home .. "/.local/bin/toggle-display-refresh"), { description = "Toggle laptop refresh rate (60 / 144 Hz)" })
 require("dms.windowrules")
 
 -- ========================================
@@ -276,8 +276,8 @@ hl.config({
         },
     },
     windowrulev2 = {
-        "opacity 0.85 0.85, class:^(kitty)$",
-        "noblur, class:^(kitty)$",
+        "opacity 0.90 0.90, class:^(kitty|spoff)$",
+        "noblur, class:^(kitty|spoff)$",
         "noblur, class:^(nvim)$",
         "opaque, class:^(Antigravity|antigravity)$",
     }

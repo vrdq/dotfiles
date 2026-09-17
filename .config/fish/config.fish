@@ -5,6 +5,14 @@ set -gx GIT_EDITOR nvim
 # Ensure user local bin is on PATH
 fish_add_path -g $HOME/.local/bin
 
+# Keep runtime paths available to scripts, but skip terminal-only setup below.
+if test -d "$HOME/.bun"
+    set --export BUN_INSTALL "$HOME/.bun"
+    fish_add_path -g $BUN_INSTALL/bin
+end
+
+status is-interactive; or return
+
 # Icon-aware directory listings with fallback to standard ls
 if type -q eza
     alias ls='eza --icons --group-directories-first'
@@ -25,31 +33,8 @@ if status is-interactive
     set -g fish_greeting ""
     set -g fish_key_bindings fish_user_key_bindings
 
-    bind \e\[A history-search-backward
-    bind \e\[B history-search-forward
-    bind up history-search-backward
-    bind down history-search-forward
-
-    function fish_prompt
-        # Keep the prompt compact and independent of the current directory.
-        set_color green
-        echo -n $USER
-        set_color normal
-        echo -n '@'
-        set_color cyan
-        echo -n (prompt_hostname)
-        set_color green
-        echo -n ' $ '
-
-        set_color normal
-    end
+    # Bindings and prompt are autoloaded from functions/, with one definition each.
 
     function fish_title
     end
-end
-
-# Bun JavaScript runtime support if installed
-if test -d "$HOME/.bun"
-    set --export BUN_INSTALL "$HOME/.bun"
-    fish_add_path -g $BUN_INSTALL/bin
 end

@@ -1,0 +1,20 @@
+{
+    "name": "Oxocarbon",
+    "widgets": "Breeze",
+    "qssFilePath": "custom-theme.css",
+    "colors": {
+        "Window": "#131313",
+        "WindowText": "#e2e2e2",
+        "Base": "#131313",
+        "AlternateBase": "#1b1b1b",
+        "ToolTipBase": "#131313",
+        "ToolTipText": "#e2e2e2",
+        "Text": "#e2e2e2",
+        "Button": "#131313",
+        "ButtonText": "#e2e2e2",
+        "BrightText": "#ffffff",
+        "Highlight": "#393939",
+        "HighlightedText": "#ffffff",
+        "Link": "#78a9ff"
+    }
+}

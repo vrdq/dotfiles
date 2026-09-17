@@ -1,17 +1,3 @@
-[KDE]
-contrast=4
-widgetStyle=Breeze
-
-[General]
-ColorScheme=DankMatugen
-Name=Dank Shell (matugen)
-fixed=JetBrains Mono,10,-1,5,50,0,0,0,0,0
-font=JetBrains Mono,10,-1,5,50,0,0,0,0,0
-menuFont=JetBrains Mono,10,-1,5,50,0,0,0,0,0
-shadeSortColumn=true
-smallestReadableFont=JetBrains Mono,8,-1,5,50,0,0,0,0,0
-toolBarFont=JetBrains Mono,10,-1,5,50,0,0,0,0,0
-
 [ColorEffects:Disabled]
 Color=198,198,198
 ColorAmount=0
@@ -144,18 +130,24 @@ ForegroundNormal=226,226,226
 ForegroundPositive=226,226,226
 ForegroundVisited=198,198,198
 
-[WM]
-activeBackground=19,19,19
-activeBlend=226,226,226
-activeForeground=226,226,226
-inactiveBackground=19,19,19
-inactiveBlend=198,198,198
-inactiveForeground=198,198,198
+[General]
+ColorScheme=DankMatugen
+Name=Dank Shell (matugen)
+fixed=JetBrains Mono,10,-1,5,50,0,0,0,0,0
+font=JetBrains Mono,10,-1,5,50,0,0,0,0,0
+menuFont=JetBrains Mono,10,-1,5,50,0,0,0,0,0
+shadeSortColumn=true
+smallestReadableFont=JetBrains Mono,8,-1,5,50,0,0,0,0,0
+toolBarFont=JetBrains Mono,10,-1,5,50,0,0,0,0,0
 
 [Icons]
 Theme=BreezeDarkMonochrome
 cursorSize=24
 cursorTheme=breeze_cursors
+
+[KDE]
+contrast=4
+widgetStyle=Breeze
 
 [KFileDialog Settings]
 Allow Expansion=false
@@ -177,3 +169,11 @@ View Style=DetailTree
 [PreviewSettings]
 EnableRemoteFolderThumbnail=false
 MaximumRemoteSize=0
+
+[WM]
+activeBackground=19,19,19
+activeBlend=226,226,226
+activeForeground=226,226,226
+inactiveBackground=19,19,19
+inactiveBlend=198,198,198
+inactiveForeground=198,198,198
