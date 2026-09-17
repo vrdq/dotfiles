@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# game-run — Ultra-Low Latency & High-FPS Game Launcher Wrapper
+# Optimized for Hyprland, High Refresh Panels (144Hz-240Hz), and Hybrid GPUs.
+# ==============================================================================
+
+set -eo pipefail
+
+if [ $# -eq 0 ]; then
+    echo "Usage: game-run <command> [args...]"
+    echo ""
+    echo "Examples:"
+    echo "  game-run lunarclient"
+    echo "  game-run prismlauncher"
+    echo "  game-run steam"
+    exit 1
+fi
+
+# 1. GPU Detection & PRIME Offloading
+# If an NVIDIA GPU is present alongside an integrated Intel/AMD GPU, force NVIDIA offload
+if lspci 2>/dev/null | grep -qi "NVIDIA" && lspci 2>/dev/null | grep -E -qi "(Intel|AMD.*Radeon|AMD.*Graphics)"; then
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+fi
+
+# 2. Ultra-Low Latency Presentation Flags
+export vblank_mode=0
+export __GL_SYNC_TO_VBLANK=0
+export MESA_VK_WSI_PRESENT_MODE=mailbox
+export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+
+# 3. Request performance power profile if power-profiles-daemon is active
+if command -v powerprofilesctl >/dev/null 2>&1; then
+    powerprofilesctl set performance 2>/dev/null || true
+fi
+
+# 4. Wrap with gamemoderun if installed
+WRAPPER=()
+if command -v gamemoderun >/dev/null 2>&1; then
+    WRAPPER+=(gamemoderun)
+fi
+
+# 5. Execute game with elevated process priority if permissions allow
+if command -v nice >/dev/null 2>&1; then
+    exec "${WRAPPER[@]}" nice -n -4 "$@"
+else
+    exec "${WRAPPER[@]}" "$@"
+fi

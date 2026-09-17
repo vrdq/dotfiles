@@ -296,6 +296,7 @@ hl.config({
         "noblur, class:^(kitty|spoff)$",
         "noblur, class:^(nvim)$",
         "opaque, class:^(Antigravity|antigravity)$",
+        "immediate, class:^(minecraft|Minecraft.*|lunarclient|Lunar Client.*|prismlauncher|steam_app_.*|cs2)$",
     }
 })
 

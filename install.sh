@@ -42,6 +42,24 @@ MANIFEST="$BACKUP_DIR/manifest.txt"
 
 DRY_RUN=false
 ASSUME_YES=false
+UPDATE_MODE=false
+
+read_user() {
+    local prompt="$1"
+    local default_val="$2"
+    local var_name="$3"
+    local response=""
+
+    if [ -t 0 ]; then
+        read -rp "$prompt" response || true
+    elif [ -e /dev/tty ]; then
+        read -rp "$prompt" response </dev/tty || true
+    else
+        response="$default_val"
+    fi
+    response="${response:-$default_val}"
+    eval "$var_name=\"$response\""
+}
 
 print_banner() {
     cat << "BANNER"
@@ -61,17 +79,42 @@ Usage: ./install.sh [OPTIONS]
 
 Options:
   -y, --yes        Non-interactive mode (automatically install packages and proceed)
+  -u, --update     Fast update mode (re-templates configs & reloads Hyprland/DMS)
+  -d, --doctor     Run system health check & rice diagnostic verification
+  -g, --gaming     Apply low-latency gaming sysctls & cache timers
+  --revert         Roll back to the most recent backup via uninstall.sh
   -n, --dry-run    Preview all changes without touching any files or links
   -h, --help       Show this help message
 
-Features:
-  • Auto-installs Hyprland, DMS, Kitty, Fish, and utilities on Arch/CachyOS
-  • Backs up existing configs to ~/.dotfiles-backup/ with one-command rollback
-  • Pre-configures display manager so you can reboot directly into Hyprland
-  • Universal display auto-detection (no black screens on different monitors)
-  • Dynamic GPU detection (safe on Intel, AMD, and NVIDIA)
+Interactive Menu:
+  Run './install.sh' without arguments in an interactive terminal to launch
+  the interactive management menu.
 HELP
 }
+
+# Interactive menu if launched with no arguments in an interactive terminal
+if [ $# -eq 0 ] && [ -t 0 -o -e /dev/tty ]; then
+    print_banner
+    echo -e "${BOLD}Select an operation:${NC}\n"
+    echo -e "  ${CYAN}[1]${NC} ${BOLD}Full Installation${NC}    Convert system to Hyprland + DMS suite"
+    echo -e "  ${CYAN}[2]${NC} ${BOLD}Fast Update${NC}          Re-link configs, compile tools & reload desktop"
+    echo -e "  ${CYAN}[3]${NC} ${BOLD}Rice Diagnostics${NC}     Run 'dots doctor' health check"
+    echo -e "  ${CYAN}[4]${NC} ${BOLD}Gaming Optimizer${NC}     Apply kernel sysctls & low-latency tweaks"
+    echo -e "  ${CYAN}[5]${NC} ${BOLD}Rollback / Revert${NC}    Restore previous ~/.config backup"
+    echo -e "  ${CYAN}[6]${NC} ${BOLD}Exit${NC}\n"
+
+    choice="1"
+    read_user "Enter choice [1-6] (default: 1): " "1" choice
+    case "$choice" in
+        1) ;; # Continue with full install
+        2) UPDATE_MODE=true; ASSUME_YES=true ;;
+        3) exec "$REPO_DIR/scripts/dots" doctor ;;
+        4) exec "$REPO_DIR/scripts/dots" optimize ;;
+        5) exec "$REPO_DIR/uninstall.sh" ;;
+        6|q|Q) echo -e "${YELLOW}Exiting.${NC}"; exit 0 ;;
+        *) echo -e "${RED}Invalid choice: $choice${NC}"; exit 1 ;;
+    esac
+fi
 
 # Parse command line flags
 while [[ $# -gt 0 ]]; do
@@ -79,6 +122,20 @@ while [[ $# -gt 0 ]]; do
         -y|--yes)
             ASSUME_YES=true
             shift
+            ;;
+        -u|--update)
+            UPDATE_MODE=true
+            ASSUME_YES=true
+            shift
+            ;;
+        -d|--doctor)
+            exec "$REPO_DIR/scripts/dots" doctor
+            ;;
+        -g|--gaming|--optimize)
+            exec "$REPO_DIR/scripts/dots" optimize
+            ;;
+        --rollback|--revert|--uninstall)
+            exec "$REPO_DIR/uninstall.sh"
             ;;
         -n|--dry-run)
             DRY_RUN=true
@@ -95,23 +152,6 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-
-read_user() {
-    local prompt="$1"
-    local default_val="$2"
-    local var_name="$3"
-    local response=""
-
-    if [ -t 0 ]; then
-        read -rp "$prompt" response || true
-    elif [ -e /dev/tty ]; then
-        read -rp "$prompt" response </dev/tty || true
-    else
-        response="$default_val"
-    fi
-    response="${response:-$default_val}"
-    eval "$var_name=\"$response\""
-}
 
 # 1. Package Installation for Arch / CachyOS systems (e.g. running from KDE)
 install_packages() {
@@ -161,6 +201,8 @@ install_packages() {
         librewolf
         prismlauncher
         gwenview
+        gamemode
+        mangohud
     )
 
     local extra_apps=(
@@ -337,8 +379,8 @@ install_file() {
 
     # 3. Standard symlinked files
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
-        # If already pointing to source, skip
-        if [ -L "$target_path" ] && [ "$(readlink -f "$target_path")" = "$(readlink -f "$source_path")" ]; then
+        # If target already resolves to source, skip immediately to prevent circular symlinks
+        if [ "$(readlink -f "$target_path" 2>/dev/null || true)" = "$(readlink -f "$source_path" 2>/dev/null || true)" ]; then
             return
         fi
 
@@ -371,7 +413,11 @@ configure_display_manager() {
 
 main() {
     print_banner
-    install_packages
+    if [ "$UPDATE_MODE" = false ]; then
+        install_packages
+    else
+        echo -e "${CYAN}Running in fast update mode (skipping package dependency checks)...${NC}\n"
+    fi
 
     if [ "$ASSUME_YES" = false ] && [ "$DRY_RUN" = false ]; then
         echo -e "${BOLD}Ready to deploy dotfiles:${NC}"
@@ -391,21 +437,23 @@ main() {
     echo -e "${BOLD}Deploying configuration files...${NC}"
 
     # 0. Migrate any legacy directory symlinks to real directories
-    if [ -d "$REPO_DIR/.config" ]; then
-        for dir in "$REPO_DIR/.config"/*; do
-            if [ -d "$dir" ]; then
-                local bname="$(basename -- "$dir")"
-                local target_dir="$HOME/.config/$bname"
-                if [ -L "$target_dir" ]; then
-                    echo -e "  [${YELLOW}migrating${NC}] Converting legacy directory symlink to real directory: .config/$bname"
-                    mkdir -p "$(dirname -- "$BACKUP_DIR/.config/$bname")"
-                    mv -- "$target_dir" "$BACKUP_DIR/.config/$bname"
-                    echo ".config/$bname|DIR_SYMLINK" >> "$MANIFEST"
-                    mkdir -p "$target_dir"
+    for pdir in .config .local/share; do
+        if [ -d "$REPO_DIR/$pdir" ]; then
+            for dir in "$REPO_DIR/$pdir"/*; do
+                if [ -d "$dir" ]; then
+                    local bname="$(basename -- "$dir")"
+                    local target_dir="$HOME/$pdir/$bname"
+                    if [ -L "$target_dir" ]; then
+                        echo -e "  [${YELLOW}migrating${NC}] Converting legacy directory symlink to real directory: $pdir/$bname"
+                        mkdir -p "$(dirname -- "$BACKUP_DIR/$pdir/$bname")"
+                        mv -- "$target_dir" "$BACKUP_DIR/$pdir/$bname"
+                        echo "$pdir/$bname|DIR_SYMLINK" >> "$MANIFEST"
+                        mkdir -p "$target_dir"
+                    fi
                 fi
-            fi
-        done
-    fi
+            done
+        fi
+    done
 
     # 1. Install .config files
     while IFS= read -r -d '' source_file; do
@@ -471,10 +519,28 @@ main() {
     fi
 
     # 8. Configure display manager preselection
-    configure_display_manager
+    if [ "$UPDATE_MODE" = false ]; then
+        configure_display_manager
+    fi
 
     echo ""
     if [ "$DRY_RUN" = false ]; then
+        if [ "$UPDATE_MODE" = true ]; then
+            echo -e "${GREEN}${BOLD}✓ Dotfiles update completed successfully!${NC}"
+            echo -e "  Backup saved to: ${CYAN}$BACKUP_DIR${NC}"
+            echo -e "\n${BOLD}Refreshing active desktop session...${NC}"
+            if command -v hyprctl >/dev/null 2>&1; then
+                hyprctl reload >/dev/null 2>&1 || true
+                echo -e "  [${GREEN}✓${NC}] Hyprland configuration reloaded"
+            fi
+            if command -v dms >/dev/null 2>&1; then
+                dms restart >/dev/null 2>&1 || true
+                echo -e "  [${GREEN}✓${NC}] DankMaterialShell restarted"
+            fi
+            echo -e "\n${GREEN}Desktop refreshed successfully.${NC}\n"
+            return 0
+        fi
+
         echo -e "${GREEN}${BOLD}✓ Dotfiles installation completed successfully!${NC}"
         echo -e "  Backup saved to: ${CYAN}$BACKUP_DIR${NC}"
         echo -e "  To revert anytime: ${BOLD}./uninstall.sh${NC}\n"

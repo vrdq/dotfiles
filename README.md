@@ -29,15 +29,44 @@ curl -fsSL https://raw.githubusercontent.com/vrdq/dotfiles/main/install.sh | bas
 ```
 
 The installer will:
-1. Detect and offer to install all missing packages (`hyprland`, `dms-shell-hyprland`, `kitty`, `fish`, `fastfetch`, fonts, and utilities) via `pacman`.
+1. Detect and offer to install all missing packages (`hyprland`, `dms-shell-hyprland`, `kitty`, `fish`, `fastfetch`, `gamemode`, `mangohud`, fonts, and utilities) via `pacman`.
 2. Back up conflicting configuration files to `~/.dotfiles-backup/`.
 3. Deploy the dotfiles, compile the crosshair overlay, and link wallpapers.
 4. Pre-select Hyprland in your display manager (SDDM/greetd).
 5. Prompt you to reboot straight into your new desktop.
 
 Options:
-- `./install.sh --dry-run`: Preview changes without touching files.
+- `./install.sh`: Interactive TUI menu (Full Install, Fast Update, Doctor, Gaming, Rollback).
+- `./install.sh -u`, `--update`: Fast update mode (re-templates configs & reloads desktop without package checks).
+- `./install.sh -d`, `--doctor`: Run system health checks and verify all rice components.
+- `./install.sh -g`, `--gaming`: Apply low-latency kernel sysctl parameters and cache maintenance timers.
+- `./install.sh --revert`: Restore configuration from the latest backup.
 - `./install.sh -y`: Automated non-interactive installation.
+- `./install.sh -n`, `--dry-run`: Preview changes without touching files.
+
+## Dots CLI Management Tool
+
+The repository installs `dots` to `~/.local/bin/dots` for complete lifecycle control:
+
+```bash
+dots status             # Inspect git commit, monitors/refresh rates, theme & shell status
+dots update             # Git pull latest commits, re-template configs, and hot-reload desktop
+dots doctor             # Health check verifying binaries, wayland tools, fonts, and portals
+dots optimize           # Apply low-latency gaming sysctl settings and pacman cache trims
+dots reload             # Hot-reload Hyprland configuration and restart DMS shell
+dots push "commit msg"  # Stage, commit, and push changes to GitHub in one command
+dots backup             # Snapshot active ~/.config to ~/.dotfiles-backup/
+```
+
+## Gaming & High-FPS Optimizations
+
+- **Zero-Latency Window Rules**: Hyprland allows direct scanout and immediate page-flipping without compositor buffering for competitive titles (`windowrulev2 = immediate, class:^(minecraft|lunarclient|prismlauncher|steam_app_.*|cs2)$`).
+- **`game-run` Launcher**: Wraps games in `gamemoderun`, forces high-performance power profiles, disables V-Sync (`vblank_mode=0`, `__GL_SYNC_TO_VBLANK=0`), and automatically triggers PRIME offloading on dual-GPU laptops (Intel/AMD + NVIDIA):
+  ```bash
+  game-run lunarclient
+  game-run prismlauncher
+  game-run steam
+  ```
 
 ### Safety & Backups
 
