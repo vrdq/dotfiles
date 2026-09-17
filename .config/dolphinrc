@@ -1,9 +1,11 @@
 MenuBar=Disabled
 
 [DetailsMode]
+ExpandableFolders=true
 PreviewSize=64
 
 [General]
+GlobalViewProps=true
 RememberOpenedTabs=false
 ShowFullPathInTitlebar=true
 Version=202

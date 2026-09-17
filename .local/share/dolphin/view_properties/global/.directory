@@ -1,0 +1,6 @@
+[Dolphin]
+Mode=2
+ShowPreview=false
+SortRole=text
+SortOrder=0
+VisibleRoles=size,modificationtime
