@@ -137,7 +137,10 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 -- Multi-monitor profile (mixed-refresh laptop + HDMI panel)
 hl.monitor({ output = "eDP-1", mode = "1920x1080@144", position = "0x0", scale = 1, vrr = 1 })
-hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@74.97", position = "1920x0", scale = 1, vrr = 0 })
+hl.monitor({ output = "HDMI-A-1", mode = "highrr", position = "1920x0", scale = 1, vrr = 0 })
+
+-- Machine-local monitor override (if present, ignored by git)
+pcall(require, "monitors.local")
 
 -- Smooth curve for window movement and maximize/fullscreen transitions (Super + F)
 hl.curve("smoothOut", { type = "bezier", points = { { 0.16, 1.0 }, { 0.3, 1.0 } } })

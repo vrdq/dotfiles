@@ -322,7 +322,20 @@ install_file() {
         return
     fi
 
-    # 2. Standard symlinked files
+    # 2. DMS runtime auto-generated files (copy initial templates, don't symlink to git)
+    if [[ "$relative_to_home" == .config/hypr/dms/* ]]; then
+        if [ -L "$target_path" ]; then
+            rm -f "$target_path"
+        fi
+        if [ ! -f "$target_path" ]; then
+            mkdir -p "$(dirname -- "$target_path")"
+            cp -f "$source_path" "$target_path"
+            echo -e "  [${GREEN}copied${NC}] $relative_to_home"
+        fi
+        return
+    fi
+
+    # 3. Standard symlinked files
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
         # If already pointing to source, skip
         if [ -L "$target_path" ] && [ "$(readlink -f "$target_path")" = "$(readlink -f "$source_path")" ]; then
