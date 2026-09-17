@@ -484,11 +484,13 @@ main() {
         echo -e "  2. On your login screen (SDDM/greetd), ensure ${GREEN}Hyprland${NC} is chosen as the session"
         echo -e "  3. Log in to enjoy the Hyprland + DankMaterialShell setup!\n"
 
-        local do_reboot="n"
-        read_user "Would you like to reboot now? [y/N] " "n" do_reboot
-        if [[ "$do_reboot" =~ ^[yY]([eE][sS])?$ ]]; then
-            echo -e "${GREEN}Rebooting...${NC}"
-            systemctl reboot
+        if [ "$ASSUME_YES" = false ] && [ -t 0 -o -e /dev/tty ]; then
+            local do_reboot="n"
+            read_user "Would you like to reboot now? [y/N] " "n" do_reboot
+            if [[ "$do_reboot" =~ ^[yY]([eE][sS])?$ ]]; then
+                echo -e "${GREEN}Rebooting...${NC}"
+                systemctl reboot
+            fi
         fi
     fi
 }
