@@ -7,10 +7,16 @@ if [ "$1" = "dev" ]; then
     exec agy --conversation a41e34e9-3e15-4ff8-b334-15ca4d726cd8 "$@"
 fi
 
-if [ -x "$HOME/spot-tui/.venv/bin/spoff" ]; then
+if [ -x "$HOME/spoff/.venv/bin/spoff" ]; then
+    exec "$HOME/spoff/.venv/bin/spoff" "$@"
+elif [ -x "$HOME/spot-tui/.venv/bin/spoff" ]; then
     exec "$HOME/spot-tui/.venv/bin/spoff" "$@"
+elif [ -x "/usr/bin/spoff" ] && [ "$(realpath /usr/bin/spoff 2>/dev/null)" != "$(realpath "$0" 2>/dev/null)" ]; then
+    exec /usr/bin/spoff "$@"
 elif command -v spoff-bin >/dev/null 2>&1; then
     exec spoff-bin "$@"
+elif [ -d "$HOME/spoff" ] && command -v uv >/dev/null 2>&1; then
+    exec uv --directory "$HOME/spoff" run spoff "$@"
 else
     echo "spoff (Spotify TUI) is not installed." >&2
     echo "Visit https://github.com/vrdq/spoff to install." >&2
