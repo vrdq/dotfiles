@@ -288,42 +288,70 @@ init_backup() {
     touch "$MANIFEST"
 
     # Create one-click rollback script
-    cat << ROLLBACK_EOF > "$BACKUP_DIR/rollback.sh"
+    cat << 'ROLLBACK_EOF' > "$BACKUP_DIR/rollback.sh"
 #!/usr/bin/env bash
-# Automatic Rollback Script generated on $TIMESTAMP
+# Automatic Rollback Script
 set -euo pipefail
 
-BACKUP_DIR="\$(cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)"
-MANIFEST="\$BACKUP_DIR/manifest.txt"
+BACKUP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+MANIFEST="$BACKUP_DIR/manifest.txt"
 
-if [ ! -f "\$MANIFEST" ]; then
-    echo "Error: manifest.txt not found in \$BACKUP_DIR"
+if [ ! -f "$MANIFEST" ]; then
+    echo "Error: manifest.txt not found in $BACKUP_DIR"
     exit 1
 fi
 
-echo "Restoring backed up files from \$BACKUP_DIR..."
+echo "Restoring backed up files from $BACKUP_DIR..."
 
-while IFS='|' read -r rel_path orig_type; do
-    [ -z "\$rel_path" ] && continue
-    target="\$HOME/\$rel_path"
-    backed_up="\$BACKUP_DIR/\$rel_path"
+# Read manifest in reverse order so nested files are removed before parent directories are restored
+mapfile -t manifest_lines < "$MANIFEST"
+for (( i=${#manifest_lines[@]}-1; i>=0; i-- )); do
+    line="${manifest_lines[i]}"
+    IFS='|' read -r rel_path orig_type <<< "$line"
+    [ -z "$rel_path" ] && continue
+    target="$HOME/$rel_path"
+    backed_up="$BACKUP_DIR/$rel_path"
 
     # Remove installed symlink or file
-    if [ -e "\$target" ] || [ -L "\$target" ]; then
-        rm -rf "\$target"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        rm -rf "$target"
     fi
 
     # Restore original file if it existed
-    if [ "\$orig_type" != "NONE" ] && { [ -e "\$backed_up" ] || [ -L "\$backed_up" ]; }; then
-        mkdir -p "\$(dirname -- "\$target")"
-        mv "\$backed_up" "\$target"
-        echo "  Restored: \$target"
+    if [ "$orig_type" != "NONE" ] && { [ -e "$backed_up" ] || [ -L "$backed_up" ]; }; then
+        mkdir -p "$(dirname -- "$target")"
+        mv "$backed_up" "$target"
+        echo "  Restored: $target"
     fi
-done < "\$MANIFEST"
+done
 
 echo "Rollback completed successfully!"
 ROLLBACK_EOF
     chmod +x "$BACKUP_DIR/rollback.sh"
+}
+
+# Recursively migrate any legacy parent directory symlinks (e.g. whole-directory symlinks from older rices)
+migrate_parent_directory_symlinks() {
+    local target="$1"
+    local cur="$(dirname -- "$target")"
+    local to_migrate=()
+
+    while [ "$cur" != "$HOME" ] && [ "$cur" != "/" ] && [ "$cur" != "." ]; do
+        if [ -L "$cur" ]; then
+            to_migrate+=("$cur")
+        fi
+        cur="$(dirname -- "$cur")"
+    done
+
+    for ((idx=${#to_migrate[@]}-1; idx>=0; idx--)); do
+        local symlink_dir="${to_migrate[idx]}"
+        local rel_dir="${symlink_dir#"$HOME/"}"
+        echo -e "  [${YELLOW}migrating${NC}] Converting legacy directory symlink to real directory: $rel_dir"
+        mkdir -p "$(dirname -- "$BACKUP_DIR/$rel_dir")"
+        mv -- "$symlink_dir" "$BACKUP_DIR/$rel_dir"
+        echo "$rel_dir|DIR_SYMLINK" >> "$MANIFEST"
+        mkdir -p "$symlink_dir"
+    done
 }
 
 # Safe backup & symlink / template function
@@ -336,6 +364,9 @@ install_file() {
         echo -e "  [${CYAN}dry-run${NC}] $source_path -> $target_path"
         return
     fi
+
+    # 0. Migrate any parent directory symlinks
+    migrate_parent_directory_symlinks "$target_path"
 
     # 1. Check if file requires dynamic home substitution
     if grep -q "__HOME__" "$source_path" 2>/dev/null; then
@@ -408,6 +439,57 @@ configure_display_manager() {
         else
             echo -e "[Last]\nSession=/usr/share/wayland-sessions/hyprland.desktop" | sudo tee /var/lib/sddm/state.conf >/dev/null 2>&1 || true
         fi
+    fi
+}
+
+# Clean up obsolete artifacts and broken symlinks from previous rice versions
+cleanup_obsolete_symlinks() {
+    if [ "$DRY_RUN" = true ]; then return; fi
+    echo -e "\n${BOLD}Cleaning up obsolete rice artifacts & dead symlinks...${NC}"
+    local count=0
+
+    # 1. Obsolete known scripts from older versions
+    local legacy_scripts=(
+        "cleaning-mode"
+    )
+    for s in "${legacy_scripts[@]}"; do
+        if [ -e "$HOME/.local/bin/$s" ] || [ -L "$HOME/.local/bin/$s" ]; then
+            echo -e "  [${YELLOW}cleanup${NC}] Removing deprecated script: .local/bin/$s"
+            rm -f "$HOME/.local/bin/$s"
+            count=$((count + 1))
+        fi
+    done
+
+    # 2. Find any dangling symlinks in ~/.local/bin, ~/.config, ~/.local/share pointing to dotfiles
+    while IFS= read -r -d '' link_file; do
+        local raw_dest
+        raw_dest="$(readlink "$link_file" 2>/dev/null || true)"
+        if [[ "$raw_dest" == *dotfiles* || "$raw_dest" == *"$REPO_DIR"* ]]; then
+            if [ ! -e "$link_file" ]; then
+                echo -e "  [${YELLOW}cleanup${NC}] Removing obsolete dangling symlink: ${link_file#"$HOME/"}"
+                rm -f "$link_file"
+                count=$((count + 1))
+            fi
+        fi
+    done < <(find "$HOME/.local/bin" "$HOME/.config" "$HOME/.local/share" -maxdepth 4 -xtype l -print0 2>/dev/null)
+
+    # 3. Clean stale DankMaterialShell runtime caches so new themes render cleanly
+    if [ -d "$HOME/.cache/dms" ]; then
+        rm -rf "$HOME/.cache/dms" 2>/dev/null || true
+    fi
+
+    # 4. Refresh icon and font caches
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        gtk-update-icon-cache -q -f -t "$HOME/.local/share/icons/BreezeDarkMonochrome" 2>/dev/null || true
+    fi
+    if command -v fc-cache >/dev/null 2>&1; then
+        fc-cache -f "$HOME/.local/share/fonts" 2>/dev/null || true
+    fi
+
+    if [ "$count" -eq 0 ]; then
+        echo -e "  [${GREEN}✓${NC}] No obsolete symlinks found."
+    else
+        echo -e "  [${GREEN}✓${NC}] Cleaned up $count obsolete item(s)."
     fi
 }
 
@@ -518,7 +600,10 @@ main() {
         update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
     fi
 
-    # 8. Configure display manager preselection
+    # 8. Clean up obsolete symlinks & stale caches from older rice versions
+    cleanup_obsolete_symlinks
+
+    # 9. Configure display manager preselection
     if [ "$UPDATE_MODE" = false ]; then
         configure_display_manager
     fi

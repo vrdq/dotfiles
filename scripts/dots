@@ -109,9 +109,25 @@ cmd_update() {
     fi
 
     cd "$DOTFILES_DIR"
-    git pull origin main
 
-    echo -e "\n${BOLD}Re-deploying configuration files...${NC}"
+    # 1. Stash any local uncommitted edits to prevent merge aborts on older checkouts
+    local stashed=false
+    if ! git diff --quiet || ! git diff --staged --quiet; then
+        echo -e "  [${YELLOW}stash${NC}] Shelving local modifications before updating..."
+        git stash push -m "dots-update-autostash-$(date +%s)" >/dev/null 2>&1 || true
+        stashed=true
+    fi
+
+    echo -e "  [${CYAN}git${NC}] Pulling latest changes from origin/main..."
+    if ! git pull --rebase origin main 2>/dev/null; then
+        git pull origin main || true
+    fi
+
+    if [ "$stashed" = true ]; then
+        git stash pop >/dev/null 2>&1 || true
+    fi
+
+    echo -e "\n${BOLD}Re-deploying configuration files & migrating legacy links...${NC}"
     "$DOTFILES_DIR/install.sh" -y --update 2>/dev/null || "$DOTFILES_DIR/install.sh" -y
 
     cmd_reload
