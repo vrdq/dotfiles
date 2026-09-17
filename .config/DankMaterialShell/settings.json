@@ -1,7 +1,7 @@
 {
   "currentThemeName": "custom",
   "currentThemeCategory": "registry",
-  "customThemeFile": "/home/vrdq/.config/DankMaterialShell/themes/oxocarbon/theme.json",
+  "customThemeFile": "~/.config/DankMaterialShell/themes/oxocarbon/theme.json",
   "registryThemeVariants": {
     "flexoki": "red",
     "amoledBlack": {
@@ -113,7 +113,7 @@
   ],
   "networkPreference": "wifi",
   "cursorSettings": {
-    "theme": "breeze_cursors",
+    "theme": "Bibata-Modern-Classic",
     "size": 24,
     "niri": {
       "hideWhenTyping": false,
@@ -175,12 +175,11 @@
   "updaterAllowAUR": false,
   "displayNameMode": "model",
   "screenPreferences": {
-    "notifications": [],
+    "notifications": [
+      "all"
+    ],
     "lockScreen": [
-      {
-        "name": "eDP-1",
-        "model": "0x0C29"
-      }
+      "all"
     ],
     "toast": [],
     "notepad": []
@@ -196,12 +195,9 @@
       "enabled": true,
       "position": 0,
       "screenPreferences": [
-        {
-          "name": "eDP-1",
-          "model": "0x0C29"
-        }
+        "all"
       ],
-      "showOnLastDisplay": false,
+      "showOnLastDisplay": true,
       "leftWidgets": [
         {
           "id": "systemTray",

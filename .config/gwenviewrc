@@ -1,0 +1,15 @@
+[General]
+BirdEyeViewEnabled=false
+LastUsedVersion=210800
+SideBarPage=operations
+
+[MainWindow]
+MenuBar=Disabled
+
+[SideBar]
+InformationSplitterSizes=220,255
+IsVisible ViewMode=true
+SideBarSplitterSizes=245,706
+
+[UiSettings]
+ColorScheme=DankMatugen

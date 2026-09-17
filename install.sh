@@ -160,10 +160,12 @@ install_packages() {
         easyeffects
         librewolf
         prismlauncher
+        gwenview
     )
 
     local extra_apps=(
         vesktop
+        bibata-cursor-theme
     )
 
     local missing=()
@@ -417,7 +419,7 @@ main() {
     if [ -d "$REPO_DIR/scripts" ]; then
         while IFS= read -r -d '' source_file; do
             sname="$(basename -- "$source_file")"
-            [[ "$sname" == ".*" || "$sname" == "*.tmp" ]] && continue
+            [[ "$sname" == .* || "$sname" == *.tmp ]] && continue
             target="$HOME/.local/bin/$sname"
             install_file "$source_file" "$target"
             [ "$DRY_RUN" = false ] && chmod +x "$target"

@@ -14,9 +14,9 @@ hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 -- Cursor
 hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
-hl.env("XCURSOR_SIZE", "20")
+hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
-hl.env("HYPRCURSOR_SIZE", "20")
+hl.env("HYPRCURSOR_SIZE", "24")
 -- Qt / Electron
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
@@ -200,11 +200,24 @@ hl.config({
 -- ========================================
 -- WORKSPACE STARTING LAYOUT
 -- ========================================
--- Start with workspace 1 on the external display and workspace 2 on the laptop.
--- All other workspaces stay dynamic: an unused workspace opens on whichever
--- monitor is focused when its shortcut is pressed.
-hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true, persistent = true })
-hl.workspace_rule({ workspace = "2", monitor = "eDP-1", default = true, persistent = true })
+-- If a multi-monitor setup with HDMI-A-1 is connected, pin workspace 1 to HDMI and 2 to eDP.
+-- Otherwise, workspaces stay dynamically attached to whichever monitor is available.
+local function is_monitor_connected(name)
+    local f = io.open("/sys/class/drm/card1-" .. name .. "/status", "r")
+        or io.open("/sys/class/drm/card0-" .. name .. "/status", "r")
+        or io.open("/sys/class/drm/card2-" .. name .. "/status", "r")
+    if f then
+        local status = f:read("*l")
+        f:close()
+        return status == "connected"
+    end
+    return false
+end
+
+if is_monitor_connected("HDMI-A-1") and is_monitor_connected("eDP-1") then
+    hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true, persistent = true })
+    hl.workspace_rule({ workspace = "2", monitor = "eDP-1", default = true, persistent = true })
+end
 
 -- ========================================
 -- WINDOW RULES
@@ -241,8 +254,8 @@ require("dms.cursor")
 -- Keep the chosen cursor authoritative if DMS regenerates dms/cursor.lua.
 hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
-hl.env("HYPRCURSOR_SIZE", "20")
-hl.env("XCURSOR_SIZE", "20")
+hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_SIZE", "24")
 require("dms.binds")
 require("dms.binds-user")
 
