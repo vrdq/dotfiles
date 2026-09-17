@@ -630,6 +630,7 @@ int main(int argc, char **argv) {
     if (strcasecmp(action, "reload") == 0) {
         pid_t pid = get_running_pid();
         if (pid > 0) {
+            kill(pid, SIGUSR1);
             kill(pid, SIGHUP);
             printf("Reload signal sent to crosshair (PID %d)\n", pid);
             return 0;
@@ -728,6 +729,7 @@ int main(int argc, char **argv) {
     g_unix_signal_add(SIGTERM, on_sigterm, NULL);
     g_unix_signal_add(SIGINT, on_sigterm, NULL);
     g_unix_signal_add(SIGHUP, on_sighup, NULL);
+    g_unix_signal_add(SIGUSR1, on_sighup, NULL);
 
     GdkDisplay *display = gdk_display_get_default();
     if (display) {

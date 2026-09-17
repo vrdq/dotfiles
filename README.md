@@ -1,81 +1,81 @@
 # dotfiles
 
-Personal desktop configuration for Hyprland and DankMaterialShell, tuned for low latency and a dark oxocarbon look.
+Personal desktop configuration for Hyprland and DankMaterialShell on Arch Linux, configured for low input latency and a dark monochrome Oxocarbon theme.
 
-Includes an installer that backs up existing configurations before linking, along with a rollback script to undo changes.
+Includes an automated installer that backs up existing configuration files before symlinking, with a rollback script to restore earlier settings.
 
-## Overview
+## System Components
 
-- **Compositor**: Hyprland configured via Lua (`hyprland.lua`) with direct scanout for games, dwindle tiling, and dynamic monitor detection so foreign display outputs don't produce black screens.
-- **Desktop Shell**: DankMaterialShell with Oxocarbon dark palette, custom status bar, clipboard history, and media controls.
-- **Terminal**: Kitty with a green cursor trail, subtle background opacity (0.85), and Powerline tabs.
-- **Shells**: Fish with custom prompt and `eza` aliases; Bash configured with `ble.sh` autosuggestions.
-- **Editor**: Neovim with LazyVim and automatic DMS theme synchronization (`colors/dms.lua`).
-- **Crosshair Overlay**: Custom C + GTK layer-shell crosshair (`src/crosshair`) and Qt configuration panel (`crosshair-gui`).
-- **Scripts**: Screenshot capture to clipboard, GPU detection launcher, and power profile toggle.
+- Hyprland: configured via Lua (`hyprland.lua`) with direct scanout for games, dwindle tiling, and dynamic monitor detection to avoid black screens on external displays.
+- DankMaterialShell: dark Oxocarbon theme with status bar, clipboard history, and media controls.
+- Kitty: terminal with green cursor trail, 0.85 background opacity, and tab bar.
+- Fish and Bash: Fish for interactive shell use with custom prompt; Bash configured with `ble.sh` for syntax highlighting and autosuggestions.
+- Neovim: LazyVim configuration synchronized with DMS theme tokens.
+- Crosshair overlay: native Wayland layer-shell daemon in C (`src/crosshair`) with Qt settings dialog (`crosshair-gui`).
+- Helper scripts: screenshot utility to clipboard, GPU offload wrapper (`game-run`), and power profile toggle.
 
 ## Installation
 
-Open a terminal (like Konsole in KDE) and run the one-line installer:
+Run the installer via curl:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vrdq/dotfiles/main/install.sh | bash
 ```
 
-Or via git (automatically pulls if `~/dotfiles` already exists):
+Or clone and run manually:
 
 ```bash
-git clone https://github.com/vrdq/dotfiles.git ~/dotfiles 2>/dev/null || git -C ~/dotfiles pull origin main; cd ~/dotfiles && ./install.sh
+git clone https://github.com/vrdq/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./install.sh
 ```
 
-The installer will:
-1. Detect and offer to install all missing packages (`hyprland`, `dms-shell-hyprland`, `kitty`, `fish`, `fastfetch`, `gamemode`, `mangohud`, fonts, and utilities) via `pacman`.
-2. Back up conflicting configuration files to `~/.dotfiles-backup/`.
-3. Deploy the dotfiles, compile the crosshair overlay, and link wallpapers.
-4. Pre-select Hyprland in your display manager (SDDM/greetd).
-5. Prompt you to reboot straight into your new desktop.
+The installer runs through these steps:
+1. Checks for required packages (`hyprland`, `dms-shell-hyprland`, `kitty`, `fish`, `fastfetch`, fonts) and offers to install missing dependencies via pacman.
+2. Backs up existing configuration files to `~/.dotfiles-backup/`.
+3. Creates symlinks into `~/.config/` and compiles the crosshair overlay daemon.
+4. Pre-selects Hyprland in your display manager (greetd/SDDM).
 
-Options:
-- `./install.sh`: Interactive TUI menu (Full Install, Fast Update, Doctor, Gaming, Rollback).
-- `./install.sh -u`, `--update`: Fast update mode (re-templates configs & reloads desktop without package checks).
-- `./install.sh -d`, `--doctor`: Run system health checks and verify all rice components.
-- `./install.sh -g`, `--gaming`: Apply low-latency kernel sysctl parameters and cache maintenance timers.
-- `./install.sh --revert`: Restore configuration from the latest backup.
-- `./install.sh -y`: Automated non-interactive installation.
-- `./install.sh -n`, `--dry-run`: Preview changes without touching files.
+Installer options:
+- `./install.sh`: interactive menu (Full Install, Fast Update, Doctor, Gaming, Rollback).
+- `./install.sh -u`: fast update mode (re-templates configs and reloads desktop without package checks).
+- `./install.sh -d`: run health checks to verify desktop packages and tools.
+- `./install.sh -g`: apply low-latency kernel sysctl parameters.
+- `./install.sh --revert`: restore configuration from the most recent backup.
+- `./install.sh -n`: dry-run mode to preview changes.
 
-## Dots CLI Management Tool
+## Dots CLI Tool
 
-The repository installs `dots` to `~/.local/bin/dots` for complete lifecycle control:
+The repo installs `dots` to `~/.local/bin/dots` for maintenance:
 
 ```bash
-dots status             # Inspect git commit, monitors/refresh rates, theme & shell status
-dots update             # Git pull latest commits, re-template configs, and hot-reload desktop
-dots doctor             # Health check verifying binaries, wayland tools, fonts, and portals
-dots optimize           # Apply low-latency gaming sysctl settings and pacman cache trims
-dots reload             # Hot-reload Hyprland configuration and restart DMS shell
-dots push "commit msg"  # Stage, commit, and push changes to GitHub in one command
-dots backup             # Snapshot active ~/.config to ~/.dotfiles-backup/
+dots status             # Check commit, display refresh rates, and theme status
+dots update             # Pull latest commits, re-template, and reload desktop
+dots doctor             # Health check verifying binaries, portals, and fonts
+dots optimize           # Apply low-latency gaming sysctl settings
+dots reload             # Reload Hyprland and restart DMS shell
+dots backup             # Create snapshot of ~/.config to ~/.dotfiles-backup/
 ```
 
-## Gaming & High-FPS Optimizations
+## Gaming Optimizations
 
-- **Zero-Latency Window Rules**: Hyprland allows direct scanout and immediate page-flipping without compositor buffering for competitive titles (`windowrulev2 = immediate, class:^(minecraft|lunarclient|prismlauncher|steam_app_.*|cs2)$`).
-- **`game-run` Launcher**: Wraps games in `gamemoderun`, forces high-performance power profiles, disables V-Sync (`vblank_mode=0`, `__GL_SYNC_TO_VBLANK=0`), and automatically triggers PRIME offloading on dual-GPU laptops (Intel/AMD + NVIDIA):
-  ```bash
-  game-run lunarclient
-  game-run prismlauncher
-  game-run steam
-  ```
+Hyprland is configured with direct scanout and immediate page-flipping for full-screen games to bypass compositor latency:
 
-### Safety & Backups
+```ini
+windowrulev2 = immediate, class:^(minecraft|lunarclient|prismlauncher|steam_app_.*|cs2)$
+```
 
-The installer will not overwrite existing configurations blindly:
-- Conflicting files are backed up to `~/.dotfiles-backup/backup-<timestamp>/`.
-- A `rollback.sh` script is generated inside each backup directory.
-- Run `./uninstall.sh` at any time to restore your original files and remove dotfiles symlinks.
-- Display configuration includes fallback rules so unknown monitor identifiers still get an active display.
-- NVIDIA environment flags are only set if an NVIDIA GPU is physically present on the system.
+The `game-run` wrapper launches titles under `gamemoderun`, sets performance CPU profiles, disables V-Sync (`vblank_mode=0`, `__GL_SYNC_TO_VBLANK=0`), and handles PRIME offloading on dual-GPU hardware:
+
+```bash
+game-run lunarclient
+game-run prismlauncher
+game-run steam
+```
+
+## Backups and Rollback
+
+The installer creates timestamped backups in `~/.dotfiles-backup/backup-<timestamp>/` before modifying any files. Each backup includes a `rollback.sh` script. Run `./uninstall.sh` at any time to remove symlinks and restore your original files.
 
 ## Keybinds
 
@@ -86,12 +86,12 @@ The installer will not overwrite existing configurations blindly:
 | `Super + C` | Clipboard history |
 | `Super + E` | File manager (Dolphin) |
 | `Super + N` | Neovim |
-| `Super + S` | Spoff (Spotify TUI) |
+| `Super + S` | Spoff music player |
 | `Super + Shift + X` | Toggle screen crosshair |
 | `Ctrl + Q` | Toggle power profile (Balanced / Performance) |
-| `Super + Tab` | Show / restore desktop |
+| `Super + Tab` | Show desktop |
 | `Super + A` | Unminimize last window |
-| `Print` | Interactive area screenshot to clipboard |
+| `Print` | Area screenshot to clipboard |
 | `Super + Z` | Toggle floating window |
 | `Alt + F4` | Close active window |
 
@@ -107,7 +107,6 @@ The installer will not overwrite existing configurations blindly:
 │   ├── crosshair/          # Crosshair overlay config
 │   ├── btop/               # Resource monitor theme
 │   ├── cava/               # Audio visualizer config
-│   ├── easyeffects/        # Audio effect presets
 │   ├── fastfetch/          # Terminal system info
 │   ├── gtk-3.0/ & 4.0/     # Dark GTK styling
 │   └── qt5ct/ & qt6ct/     # Qt theme overrides
@@ -115,38 +114,26 @@ The installer will not overwrite existing configurations blindly:
 ├── scripts/                # Helper tools installed to ~/.local/bin
 ├── src/crosshair/          # Crosshair overlay C source and Makefile
 ├── wallpapers/             # Wallpaper assets
-├── install.sh              # Idempotent installer with auto-backup
+├── install.sh              # Installer with automated backup
 └── uninstall.sh            # Rollback script
 ```
 
 ## Requirements
 
-Targeted at Arch Linux running Hyprland. Core tools:
-- `hyprland` (with Lua support)
+Base packages:
+- `hyprland` (compiled with Lua support)
 - `dms` (DankMaterialShell)
 - `kitty`
-- `fish` (or `bash`)
+- `fish` or `bash`
 
-Optional tools used by keybinds and helper scripts:
+Optional utilities:
 - `fastfetch`, `btop`, `cava`, `eza`
-- `grim`, `slurp`, `wl-clipboard` (screenshots)
-- `power-profiles-daemon` (power switching)
-- `gtk-layer-shell`, `gtk3` (to build the crosshair overlay)
+- `grim`, `slurp`, `wl-clipboard` (for screenshots)
+- `power-profiles-daemon` (for power switching)
+- `gtk-layer-shell`, `gtk3` (to build crosshair overlay)
 
-Missing optional packages are skipped gracefully without breaking your desktop session.
+## Shell and Session Tests
 
-## Shell and session checks
+Run `bash tests/check-shells.sh` to check shell syntax, noninteractive setup, PATH idempotence, and Fish bindings.
 
-Run `bash tests/check-shells.sh` to check shell syntax, noninteractive setup,
-PATH idempotence, Fish prompt/keybindings, and session argument forwarding.
-The launcher check uses a mock compositor; it does not restart the desktop.
-On NVIDIA machines it needs access to the real `/sys` and `/dev/dri` device
-nodes so the existing GPU-readiness guard can complete.
-
-Fish keeps its compact prompt in `functions/fish_prompt.fish`; interactive
-aliases and bindings are not initialized for scripts. Bash likewise skips
-terminal-only setup for noninteractive shells and avoids adding duplicate
-PATH entries. The session launcher reads PCI vendor/class attributes directly
-instead of spawning `lspci` and `grep`, while retaining the NVIDIA readiness
-wait and explicit `AQ_DRM_DEVICES` overrides. These reduce unnecessary setup
-work; they are not a measured reduction in whole-system boot time.
+Fish prompt functions live in `functions/fish_prompt.fish`. Noninteractive shells skip terminal styling and avoid duplicate PATH entries. The session launcher checks PCI attributes directly instead of running `lspci` and `grep` pipelines, while retaining the NVIDIA readiness wait and explicit `AQ_DRM_DEVICES` overrides.
