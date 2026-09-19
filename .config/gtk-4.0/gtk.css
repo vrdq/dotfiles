@@ -1,209 +1,148 @@
-/*
- * Oxocarbon / DankMatugen Theme for GTK4 & Libadwaita
- * Matches Dolphin & KDE DankMatugen dark palette
+/* Oxocarbon: matched to DankMaterialShell's topbar.
+ * Native widget geometry remains supplied by Breeze / libadwaita.
  */
-
 @import 'colors.css';
+@import '../gtk-3.0/widgets.css';
 
-/* Libadwaita Named Colors */
-@define-color accent_color #f2f4f8;
+@define-color accent_color #ffffff;
 @define-color accent_bg_color #393939;
 @define-color accent_fg_color #ffffff;
-
 @define-color window_bg_color #131313;
 @define-color window_fg_color #e2e2e2;
-
 @define-color view_bg_color #131313;
 @define-color view_fg_color #e2e2e2;
-
 @define-color headerbar_bg_color #131313;
 @define-color headerbar_fg_color #e2e2e2;
-@define-color headerbar_border_color #262626;
+@define-color headerbar_border_color #525252;
 @define-color headerbar_backdrop_color #131313;
-
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.24);
+@define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.5);
 @define-color sidebar_bg_color #131313;
 @define-color sidebar_fg_color #e2e2e2;
 @define-color sidebar_backdrop_color #131313;
-@define-color sidebar_border_color #262626;
-
-@define-color secondary_sidebar_bg_color #131313;
+@define-color sidebar_border_color #525252;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.24);
+@define-color secondary_sidebar_bg_color #1f1f1f;
 @define-color secondary_sidebar_fg_color #e2e2e2;
-
-@define-color card_bg_color #1b1b1b;
+@define-color secondary_sidebar_backdrop_color #1f1f1f;
+@define-color secondary_sidebar_border_color #525252;
+@define-color secondary_sidebar_shade_color rgba(0, 0, 0, 0.24);
+@define-color card_bg_color #1f1f1f;
 @define-color card_fg_color #e2e2e2;
-@define-color card_border_color #262626;
-
-@define-color popover_bg_color #1b1b1b;
+@define-color card_shade_color rgba(0, 0, 0, 0.24);
+@define-color popover_bg_color #1f1f1f;
 @define-color popover_fg_color #e2e2e2;
-
-@define-color dialog_bg_color #131313;
+@define-color popover_shade_color rgba(0, 0, 0, 0.24);
+@define-color dialog_bg_color #1f1f1f;
 @define-color dialog_fg_color #e2e2e2;
-
-@define-color destructive_bg_color #ff5252;
+@define-color overview_bg_color #121212;
+@define-color overview_fg_color #e2e2e2;
+@define-color shade_color rgba(0, 0, 0, 0.24);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
+@define-color destructive_color #ffb4ab;
+@define-color destructive_bg_color #8c2633;
 @define-color destructive_fg_color #ffffff;
-@define-color error_bg_color #ff5252;
+@define-color error_color #ffb4ab;
+@define-color error_bg_color #8c2633;
 @define-color error_fg_color #ffffff;
-
+@define-color warning_color #ffcf87;
 @define-color warning_bg_color #ff9f0a;
 @define-color warning_fg_color #131313;
-
-@define-color success_bg_color #42be65;
+@define-color success_color #9bff7f;
+@define-color success_bg_color #9bff7f;
 @define-color success_fg_color #131313;
 
-/* GTK4 Standard Named Colors */
-@define-color theme_bg_color #131313;
-@define-color theme_fg_color #e2e2e2;
-@define-color theme_base_color #131313;
-@define-color theme_text_color #e2e2e2;
-@define-color theme_selected_bg_color #393939;
-@define-color theme_selected_fg_color #ffffff;
-@define-color selected_bg_color #393939;
-@define-color selected_fg_color #ffffff;
-@define-color borders #262626;
-@define-color unfocused_borders #202020;
+/* libadwaita 1.6+ consumes CSS variables rather than named colors. */
+:root {
+    --accent-color: #ffffff;
+    --accent-bg-color: #393939;
+    --accent-fg-color: #ffffff;
+    --window-bg-color: #131313;
+    --window-fg-color: #e2e2e2;
+    --view-bg-color: #131313;
+    --view-fg-color: #e2e2e2;
+    --headerbar-bg-color: #131313;
+    --headerbar-fg-color: #e2e2e2;
+    --headerbar-border-color: #525252;
+    --headerbar-backdrop-color: #131313;
+    --headerbar-shade-color: rgba(0, 0, 0, 0.24);
+    --headerbar-darker-shade-color: rgba(0, 0, 0, 0.5);
+    --sidebar-bg-color: #131313;
+    --sidebar-fg-color: #e2e2e2;
+    --sidebar-backdrop-color: #131313;
+    --sidebar-border-color: #525252;
+    --sidebar-shade-color: rgba(0, 0, 0, 0.24);
+    --secondary-sidebar-bg-color: #1f1f1f;
+    --secondary-sidebar-fg-color: #e2e2e2;
+    --secondary-sidebar-backdrop-color: #1f1f1f;
+    --secondary-sidebar-border-color: #525252;
+    --secondary-sidebar-shade-color: rgba(0, 0, 0, 0.24);
+    --card-bg-color: #1f1f1f;
+    --card-fg-color: #e2e2e2;
+    --card-shade-color: rgba(0, 0, 0, 0.24);
+    --popover-bg-color: #1f1f1f;
+    --popover-fg-color: #e2e2e2;
+    --popover-shade-color: rgba(0, 0, 0, 0.24);
+    --dialog-bg-color: #1f1f1f;
+    --dialog-fg-color: #e2e2e2;
+    --overview-bg-color: #121212;
+    --overview-fg-color: #e2e2e2;
+    --shade-color: rgba(0, 0, 0, 0.24);
+    --scrollbar-outline-color: rgba(0, 0, 0, 0.5);
+    --destructive-color: #ffb4ab;
+    --destructive-bg-color: #8c2633;
+    --destructive-fg-color: #ffffff;
+    --error-color: #ffb4ab;
+    --error-bg-color: #8c2633;
+    --error-fg-color: #ffffff;
+    --warning-color: #ffcf87;
+    --warning-bg-color: #ff9f0a;
+    --warning-fg-color: #131313;
+    --success-color: #9bff7f;
+    --success-bg-color: #9bff7f;
+    --success-fg-color: #131313;
+    --window-radius: 8px;
+}
 
-/* Window decorations in Hyprland */
-window.csd,
-window.solid-csd {
+window.csd, window.solid-csd {
     box-shadow: none;
     border: none;
-    border-radius: 0;
 }
 
-headerbar {
-    border-bottom: 1px solid #262626;
-    box-shadow: none;
-    background-color: #131313;
-    color: #e2e2e2;
+headerbar { box-shadow: none; }
+
+popover > contents {
+    background-color: @popover_bg_color;
+    color: @popover_fg_color;
+    border-color: @mono_border;
+    border-radius: 8px;
 }
 
-separator {
-    background-color: #262626;
+/* Preserve inherited libadwaita card and grouped-list geometry. */
+list.boxed-list, list.content, .card {
+    background-color: @card_bg_color;
+    color: @card_fg_color;
 }
 
-/* Notebook tabs (e.g. Pavucontrol) */
-notebook > header {
-    background-color: #131313;
-    border-bottom: 1px solid #262626;
+.sidebar, placessidebar, stacksidebar {
+    background-color: @sidebar_bg_color;
 }
 
-notebook > header > tabs > tab {
-    background-color: #131313;
-    color: #a6a6a6;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 6px 14px;
+button, entry { border-radius: 8px; }
+
+button:focus-visible, checkbutton:focus-visible, switch:focus-visible,
+scale:focus-visible, row:focus-visible, tab:focus-visible {
+    outline-color: @mono_focus;
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: -2px;
 }
 
-notebook > header > tabs > tab:hover {
-    color: #e2e2e2;
-    background-color: #1b1b1b;
-}
-
-notebook > header > tabs > tab:checked {
-    color: #ffffff;
-    background-color: #1b1b1b;
-    border-bottom: 2px solid #dde1e6;
-}
-
-/* Sliders / Volume scales */
-scale highlight,
-scale > trough > highlight {
-    background-color: #5e5e5e;
-}
-
-scale trough {
-    background-color: #262626;
-    border-radius: 4px;
-}
-
-scale slider {
-    min-width: 14px;
-    min-height: 14px;
-    background-color: #dde1e6;
-    border: 1px solid #525252;
-    border-radius: 50%;
-}
-
-scale slider:hover {
-    background-color: #ffffff;
-}
-
-/* Progress bar & Level bar */
-progressbar > trough > progress {
-    background-color: #5e5e5e;
-    border-radius: 4px;
-}
-
-levelbar block.filled {
-    background-color: #5e5e5e;
-}
-
-levelbar block.empty {
-    background-color: #262626;
-}
-
-/* Buttons */
-button {
-    background-color: #1b1b1b;
-    color: #e2e2e2;
-    border: 1px solid #262626;
-    border-radius: 6px;
-}
-
-button:hover {
-    background-color: #262626;
-    color: #ffffff;
-    border-color: #393939;
-}
-
-button:active,
-button:checked {
-    background-color: #393939;
-    color: #ffffff;
-    border-color: #525252;
-}
-
-button.suggested-action {
-    background-color: #393939;
-    color: #ffffff;
-    border-color: #525252;
-}
-
-button.suggested-action:hover {
-    background-color: #525252;
-}
-
-/* Entries / Text inputs */
-entry {
-    background-color: #1b1b1b;
-    color: #e2e2e2;
-    border: 1px solid #262626;
-    border-radius: 6px;
-}
-
-entry:focus {
-    border-color: #525252;
-    box-shadow: none;
-}
-
-/* Global Selection */
-selection,
-*:selected {
-    background-color: #393939;
-    color: #ffffff;
-}
-
-/* Window Controls */
 windowcontrols button {
     border: none;
     background: transparent;
-    padding: 0;
-    min-width: 24px;
-    min-height: 24px;
 }
 
 windowcontrols button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: @mono_hover;
 }
-

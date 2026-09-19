@@ -1,44 +1,44 @@
-/*
- * Oxocarbon / DankMatugen Theme for GTK3
- * Matches Dolphin & KDE DankMatugen dark palette
- */
-
+/* Oxocarbon: matched to DankMaterialShell's topbar. */
 @import 'colors.css';
+@import 'widgets.css';
 
-/* Window decorations in Hyprland */
-window.csd,
-window.solid-csd {
+/* Override generated Breeze aliases where the shell uses cooler silver. */
+@define-color theme_fg_color_breeze #e2e2e2;
+@define-color theme_text_color_breeze #e2e2e2;
+@define-color theme_button_foreground_normal_breeze #e2e2e2;
+@define-color theme_button_foreground_backdrop_breeze #e2e2e2;
+@define-color theme_header_foreground_breeze #e2e2e2;
+@define-color theme_header_foreground_backdrop_breeze #e2e2e2;
+@define-color theme_titlebar_foreground_breeze #e2e2e2;
+@define-color theme_titlebar_foreground_backdrop_breeze #e2e2e2;
+@define-color theme_unfocused_fg_color_breeze #e2e2e2;
+@define-color theme_unfocused_text_color_breeze #e2e2e2;
+@define-color theme_selected_bg_color_breeze #393939;
+@define-color theme_selected_fg_color_breeze #ffffff;
+@define-color theme_button_decoration_focus_breeze #ffffff;
+@define-color theme_view_active_decoration_color_breeze #ffffff;
+@define-color tooltip_background_breeze #1f1f1f;
+@define-color tooltip_text_breeze #e2e2e2;
+
+window.csd, window.solid-csd, decoration {
     box-shadow: none;
     border: none;
-}
-
-decoration {
-    border: none;
-    box-shadow: none;
 }
 
 headerbar {
-    border-bottom: 1px solid #262626;
+    border-bottom: 1px solid #525252;
     box-shadow: none;
-    background-color: #131313;
-    color: #e2e2e2;
 }
 
-/* Base Theme Colors */
-@define-color theme_bg_color #131313;
-@define-color theme_fg_color #e2e2e2;
-@define-color theme_base_color #131313;
-@define-color theme_text_color #e2e2e2;
-@define-color theme_selected_bg_color #393939;
-@define-color theme_selected_fg_color #ffffff;
-@define-color selected_bg_color #393939;
-@define-color selected_fg_color #ffffff;
-@define-color borders #262626;
-@define-color unfocused_borders #202020;
+menu, .menu, popover.background {
+    background-color: @mono_surface;
+    color: @mono_fg;
+    border-color: @mono_border;
+}
 
-/* Global Selection */
-selection,
-*:selected {
-    background-color: #393939;
+menuitem:hover {
+    background-color: @mono_selected;
     color: #ffffff;
 }
+
+button, entry, popover.background { border-radius: 8px; }

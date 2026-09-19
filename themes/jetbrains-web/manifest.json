@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "JetBrains Mono Everywhere",
+  "version": "1.0.0",
+  "description": "Uses JetBrains Mono for ordinary webpage text.",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["jetbrains-web.css"],
+      "js": ["jetbrains-web.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}

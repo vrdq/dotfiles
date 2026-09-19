@@ -1,0 +1,72 @@
+/* Global theme font variables override (Tailwind, Bootstrap, Primer, Material) */
+:root {
+  --font-sans: "JetBrains Mono", monospace !important;
+  --font-family: "JetBrains Mono", monospace !important;
+  --font-family-sans: "JetBrains Mono", monospace !important;
+  --font-body: "JetBrains Mono", monospace !important;
+  --font-base: "JetBrains Mono", monospace !important;
+  --font-primary: "JetBrains Mono", monospace !important;
+  --bs-font-sans-serif: "JetBrains Mono", monospace !important;
+  --bs-body-font-family: "JetBrains Mono", monospace !important;
+  --bs-btn-font-family: "JetBrains Mono", monospace !important;
+  --tw-font-sans: "JetBrains Mono", monospace !important;
+}
+
+/* Universal typography: Set JetBrains Mono on all document and custom elements,
+   strictly excluding code blocks, SVGs, and icon font glyphs */
+html, body,
+*:not(
+  pre, pre *, code, code *, kbd, kbd *, samp, samp *,
+  svg, svg *,
+  i,
+  mat-icon, g-icon, iron-icon, vaadin-icon,
+  [role="img"], [role="graphics-symbol"], [role="graphics-document"],
+  [class*="material-icons" i],
+  [class*="material-symbols" i],
+  [class*="google-symbols" i],
+  [class*="codicon" i],
+  [class*="octicon" i],
+  [class*="feather" i],
+  [class*="fa-" i],
+  [class~="fa" i],
+  [class~="fas" i],
+  [class~="far" i],
+  [class~="fab" i],
+  [class~="fal" i],
+  [class~="fad" i],
+  [class*="bi-" i],
+  [class~="bi" i],
+  [class*="mdi-" i],
+  [class~="mdi" i],
+  [class*="ri-" i],
+  [class*="ti-" i],
+  [class~="ti" i],
+  [class*="ph-" i],
+  [class~="ph" i],
+  [class*="nf-" i],
+  [class*="nerd" i],
+  span[class~="icon" i],
+  span[class*="icon-" i],
+  span[class$="-icon" i],
+  span[class*="glyph" i],
+  span[class*="symbol" i]
+) {
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+/* Form controls and input placeholders */
+input, select, textarea, option {
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+input::placeholder, textarea::placeholder {
+  font-family: "JetBrains Mono", monospace !important;
+}
+
+/* Preserve preformatted code editors and terminal displays */
+pre, pre *, code, code *, kbd, kbd *, samp, samp * {
+  font-family: inherit;
+}
+
+
+

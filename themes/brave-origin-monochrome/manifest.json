@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "vrdq Monochrome",
+  "version": "1.0.0",
+  "description": "Charcoal and silver, matched to vrdq's DankMaterialShell, GTK and Kitty palette.",
+  "theme": {
+    "colors": {
+      "frame": [19, 19, 19],
+      "frame_inactive": [19, 19, 19],
+      "frame_incognito": [19, 19, 19],
+      "frame_incognito_inactive": [19, 19, 19],
+      "background_tab": [19, 19, 19],
+      "background_tab_inactive": [57, 57, 57],
+      "background_tab_incognito": [19, 19, 19],
+      "background_tab_incognito_inactive": [57, 57, 57],
+      "toolbar": [31, 31, 31],
+      "toolbar_text": [226, 226, 226],
+      "toolbar_button_icon": [226, 226, 226],
+      "tab_text": [255, 255, 255],
+      "tab_background_text": [198, 198, 198],
+      "tab_background_text_inactive": [171, 171, 171],
+      "tab_background_text_incognito": [198, 198, 198],
+      "tab_background_text_incognito_inactive": [171, 171, 171],
+      "bookmark_text": [226, 226, 226],
+      "omnibox_background": [19, 19, 19],
+      "omnibox_text": [226, 226, 226],
+      "ntp_background": [19, 19, 19],
+      "ntp_text": [226, 226, 226],
+      "ntp_link": [255, 255, 255],
+      "ntp_header": [198, 198, 198]
+    },
+    "tints": {
+      "buttons": [-1, 0, 0.85]
+    }
+  }
+}

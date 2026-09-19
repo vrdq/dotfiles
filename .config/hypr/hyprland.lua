@@ -142,20 +142,22 @@ hl.monitor({ output = "HDMI-A-1", mode = "highrr", position = "1920x0", scale = 
 -- Machine-local monitor override (if present, ignored by git)
 pcall(require, "monitors.local")
 
--- Smooth curve for window movement and maximize/fullscreen transitions (Super + F)
-hl.curve("smoothOut", { type = "bezier", points = { { 0.16, 1.0 }, { 0.3, 1.0 } } })
-
--- Harmonized animation set
-hl.animation({ leaf = "global",      enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsOut",  enabled = true, speed = 4,   bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 5.5, bezier = "smoothOut" })
-hl.animation({ leaf = "fade",        enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "border",      enabled = true, speed = 4,   bezier = "default" })
+-- Harmonized animation set (unified speed: 4, bezier: default to match workspace switching)
+hl.animation({ leaf = "global",           enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "workspaces",       enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "specialWorkspace",  enabled = true, speed = 4,   bezier = "default", style = "slidevert" })
+hl.animation({ leaf = "windowsIn",        enabled = true, speed = 4,   bezier = "default", style = "popin 85%" })
+hl.animation({ leaf = "windowsOut",       enabled = true, speed = 4,   bezier = "default", style = "popin 85%" })
+hl.animation({ leaf = "windowsMove",      enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "fade",             enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "fadeIn",           enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "fadeOut",          enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "layers",           enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "layersIn",         enabled = true, speed = 4,   bezier = "default", style = "popin 85%" })
+hl.animation({ leaf = "layersOut",        enabled = true, speed = 4,   bezier = "default", style = "popin 85%" })
+hl.animation({ leaf = "border",           enabled = true, speed = 4,   bezier = "default" })
 -- Borders are disabled below; do not keep an invisible animation running every frame.
-hl.animation({ leaf = "borderangle", enabled = false, speed = 100, bezier = "linear", style = "loop" })
-hl.animation({ leaf = "workspaces",  enabled = true, speed = 4,   bezier = "default" })
-hl.animation({ leaf = "layers",      enabled = true, speed = 4,   bezier = "default" })
+hl.animation({ leaf = "borderangle",      enabled = false, speed = 100, bezier = "linear",  style = "loop" })
 
 -- ========================================
 -- DWINDLE TILING (vanilla)

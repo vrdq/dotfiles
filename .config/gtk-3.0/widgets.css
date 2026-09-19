@@ -1,0 +1,220 @@
+/* Shared GTK3/GTK4 widget colors. Keep native sizing, icons and geometry. */
+@define-color mono_bg #131313;
+@define-color mono_surface #1f1f1f;
+@define-color mono_hover #303030;
+@define-color mono_selected #393939;
+@define-color mono_fg #e2e2e2;
+@define-color mono_muted #a6a6a6;
+@define-color mono_border #525252;
+@define-color mono_focus #ffffff;
+
+@define-color theme_bg_color @mono_bg;
+@define-color theme_fg_color @mono_fg;
+@define-color theme_base_color @mono_bg;
+@define-color theme_text_color @mono_fg;
+@define-color theme_selected_bg_color @mono_selected;
+@define-color theme_selected_fg_color #ffffff;
+@define-color selected_bg_color @mono_selected;
+@define-color selected_fg_color #ffffff;
+@define-color theme_unfocused_bg_color @mono_bg;
+@define-color theme_unfocused_fg_color @mono_fg;
+@define-color theme_unfocused_base_color @mono_bg;
+@define-color theme_unfocused_text_color @mono_fg;
+@define-color theme_unfocused_selected_bg_color @mono_selected;
+@define-color theme_unfocused_selected_fg_color #ffffff;
+@define-color insensitive_bg_color @mono_surface;
+@define-color insensitive_fg_color @mono_muted;
+@define-color insensitive_base_color @mono_bg;
+@define-color borders @mono_border;
+@define-color unfocused_borders @mono_border;
+
+window.background, dialog.background {
+    background-color: @mono_bg;
+    color: @mono_fg;
+}
+
+headerbar, toolbar, searchbar > revealer > box, actionbar > revealer > box {
+    background-color: @mono_bg;
+    background-image: none;
+    color: @mono_fg;
+    border-color: @mono_border;
+}
+
+.view, textview text, treeview, iconview, list, listview, columnview {
+    background-color: @mono_bg;
+    color: @mono_fg;
+}
+
+.sidebar, placessidebar, stacksidebar {
+    background-color: @mono_surface;
+    color: @mono_fg;
+}
+
+.sidebar list, placessidebar list, stacksidebar list {
+    background-color: transparent;
+}
+
+/* Do not select every descendant: that flattens icons and semantic badges. */
+selection, row:selected, treeview.view:selected, iconview:selected,
+flowboxchild:selected, .view:selected {
+    background-color: @mono_selected;
+    color: #ffffff;
+}
+
+row.activatable:hover:not(:selected), modelbutton:hover {
+    background-color: @mono_hover;
+}
+
+button:not(.flat):not(.suggested-action):not(.destructive-action) {
+    background-color: @mono_surface;
+    background-image: none;
+    color: @mono_fg;
+    border-color: @mono_border;
+}
+
+button:hover:not(:disabled):not(.suggested-action):not(.destructive-action) {
+    background-color: @mono_hover;
+    background-image: none;
+    color: #ffffff;
+}
+
+button:checked:not(:disabled):not(.destructive-action),
+button:active:not(:disabled):not(.destructive-action),
+button.suggested-action {
+    background-color: @mono_selected;
+    background-image: none;
+    color: #ffffff;
+    border-color: @mono_focus;
+}
+
+button.suggested-action:hover:not(:disabled) {
+    background-color: @mono_border;
+}
+
+/* Preserve a recognizable danger state and readable text. */
+button.destructive-action {
+    background-color: #8c2633;
+    background-image: none;
+    color: #ffffff;
+    border-color: #ffb4ab;
+}
+
+button.destructive-action:hover:not(:disabled),
+button.destructive-action:active:not(:disabled) {
+    background-color: #a33140;
+}
+
+entry, spinbutton:not(.vertical) {
+    background-color: @mono_surface;
+    background-image: none;
+    color: @mono_fg;
+    border-color: @mono_border;
+    caret-color: #ffffff;
+}
+
+entry:focus, entry:focus-within, spinbutton:focus-within {
+    border-color: @mono_focus;
+    box-shadow: inset 0 0 0 1px @mono_focus;
+}
+
+entry.error { border-color: #ffb4ab; }
+entry.warning { border-color: #ffcf87; }
+
+button:disabled, entry:disabled, spinbutton:disabled {
+    color: @mono_muted;
+}
+
+check, radio {
+    background-color: @mono_surface;
+    border-color: @mono_focus;
+    color: #ffffff;
+}
+
+check:checked, check:indeterminate, radio:checked, radio:indeterminate {
+    background-color: @mono_selected;
+    border-color: @mono_focus;
+    color: #ffffff;
+}
+
+switch {
+    background-color: @mono_surface;
+    color: @mono_fg;
+    border-color: @mono_border;
+}
+
+switch:checked {
+    background-color: @mono_focus;
+    color: @mono_bg;
+}
+
+switch slider {
+    min-width: 16px;
+    min-height: 16px;
+    background-color: @mono_fg;
+    background-image: none;
+    border-color: @mono_border;
+}
+
+switch:checked slider { background-color: @mono_bg; }
+
+scale trough, progressbar trough, levelbar block.empty {
+    background-color: @mono_selected;
+    background-image: none;
+    border-color: @mono_border;
+}
+
+scale highlight, progressbar progress, levelbar block.filled {
+    background-color: @mono_focus;
+    background-image: none;
+    border-color: @mono_focus;
+}
+
+scale slider {
+    min-width: 14px;
+    min-height: 14px;
+    background-color: @mono_fg;
+    background-image: none;
+    border-color: @mono_border;
+}
+
+scrollbar { background-color: @mono_bg; }
+scrollbar trough { background-color: transparent; }
+scrollbar slider {
+    background-color: #767676;
+    border-color: transparent;
+}
+scrollbar slider:hover, scrollbar slider:active { background-color: @mono_muted; }
+
+notebook > header {
+    background-color: @mono_bg;
+    background-image: none;
+    border-color: @mono_border;
+}
+notebook > header > tabs > tab { color: @mono_muted; }
+notebook > header > tabs > tab:hover { background-color: @mono_surface; }
+notebook > header > tabs > tab:checked {
+    background-color: @mono_selected;
+    color: #ffffff;
+}
+
+separator { background-color: @mono_border; }
+frame > border, scrolledwindow { border-color: @mono_border; }
+
+tooltip, tooltip.background {
+    background-color: @mono_surface;
+    color: @mono_fg;
+    border-color: @mono_border;
+}
+tooltip label { color: @mono_fg; }
+
+/* Underlining makes monochrome links identifiable without color alone. */
+*:link, *:visited { color: @mono_focus; }
+button.link label { text-decoration-line: underline; }
+
+button:focus, checkbutton:focus, radiobutton:focus, switch:focus,
+scale:focus, row:focus, tab:focus {
+    outline-color: @mono_focus;
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: -2px;
+}
