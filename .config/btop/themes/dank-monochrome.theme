@@ -1,0 +1,81 @@
+# Dank Monochrome theme for btop
+# Harmonized with IBM Carbon / Dank monochrome desktop system palette
+
+# Main background, empty for terminal default transparency
+theme[main_bg]=""
+
+# Main text color
+theme[main_fg]="#dde1e6"
+
+# Title color for boxes
+theme[title]="#ffffff"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#ffffff"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#393939"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#ffffff"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#525252"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#a6a6a6"
+
+# Cpu box outline color
+theme[cpu_box]="#3c3c3c"
+
+# Memory/disks box outline color
+theme[mem_box]="#3c3c3c"
+
+# Net up/down box outline color
+theme[net_box]="#3c3c3c"
+
+# Processes box outline color
+theme[proc_box]="#3c3c3c"
+
+# Box divider line and small boxes line color
+theme[div_line]="#262626"
+
+# Temperature graph colors (preserving semantic warning & error per system design)
+theme[temp_start]="#a6a6a6"
+theme[temp_mid]="#ff9f0a"
+theme[temp_end]="#ff5252"
+
+# CPU graph colors (monochrome scale)
+theme[cpu_start]="#525252"
+theme[cpu_mid]="#a6a6a6"
+theme[cpu_end]="#ffffff"
+
+# Mem/Disk free meter
+theme[free_start]="#393939"
+theme[free_mid]="#767676"
+theme[free_end]="#dde1e6"
+
+# Mem/Disk cached meter
+theme[cached_start]="#262626"
+theme[cached_mid]="#525252"
+theme[cached_end]="#a6a6a6"
+
+# Mem/Disk available meter
+theme[available_start]="#393939"
+theme[available_mid]="#767676"
+theme[available_end]="#dde1e6"
+
+# Mem/Disk used meter
+theme[used_start]="#525252"
+theme[used_mid]="#a6a6a6"
+theme[used_end]="#ffffff"
+
+# Download graph colors
+theme[download_start]="#393939"
+theme[download_mid]="#767676"
+theme[download_end]="#ffffff"
+
+# Upload graph colors
+theme[upload_start]="#393939"
+theme[upload_mid]="#767676"
+theme[upload_end]="#ffffff"
