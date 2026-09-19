@@ -17,11 +17,24 @@ if [ $# -eq 0 ]; then
 fi
 
 # 1. GPU Detection & PRIME Offloading
-# If an NVIDIA GPU is present alongside an integrated Intel/AMD GPU, force NVIDIA offload
-if lspci 2>/dev/null | grep -qi "NVIDIA" && lspci 2>/dev/null | grep -E -qi "(Intel|AMD.*Radeon|AMD.*Graphics)"; then
+# Fast sysfs check: zero subshell overhead compared to multiple lspci/grep calls
+has_nvidia=false
+has_igpu=false
+for vendor_file in /sys/bus/pci/devices/*/vendor; do
+    [ -r "$vendor_file" ] || continue
+    read -r v < "$vendor_file" || continue
+    case "$v" in
+        0x10de) has_nvidia=true ;;
+        0x8086|0x1002) has_igpu=true ;;
+    esac
+done
+
+if [ "$has_nvidia" = true ] && [ "$has_igpu" = true ]; then
     export __NV_PRIME_RENDER_OFFLOAD=1
     export __GLX_VENDOR_LIBRARY_NAME=nvidia
     export __VK_LAYER_NV_optimus=NVIDIA_only
+elif [ "$has_nvidia" = true ]; then
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
 fi
 
 # 2. Ultra-Low Latency Presentation Flags

@@ -154,6 +154,21 @@ cmd_doctor() {
         fi
     }
 
+    check_optional() {
+        local name="$1"
+        local cmd="$2"
+        local status=0
+        (
+            set +o pipefail
+            eval "$cmd" >/dev/null 2>&1
+        ) || status=$?
+        if [ "$status" -eq 0 ]; then
+            echo -e "  [${GREEN}PASS${NC}] $name"
+        else
+            echo -e "  [${DIM}INFO${NC}] $name ${DIM}(not installed, optional)${NC}"
+        fi
+    }
+
     echo -e "${BOLD}Core Binaries & Shell:${NC}"
     check_item "Hyprland compositor" "command -v hyprland"
     check_item "DankMaterialShell binary" "command -v dms"
@@ -177,7 +192,7 @@ cmd_doctor() {
     check_item "PrismLauncher Oxocarbon theme" "[ -d '$HOME/.local/share/PrismLauncher/themes/oxocarbon' ]"
 
     echo -e "\n${BOLD}Gaming & Performance Helpers:${NC}"
-    check_item "Gamemode daemon" "command -v gamemoded || pacman -Q gamemode"
+    check_optional "Gamemode daemon" "command -v gamemoded || pacman -Q gamemode"
     check_item "game-run launcher" "command -v game-run || [ -x '$HOME/.local/bin/game-run' ]"
     check_item "Crosshair overlay binary" "command -v crosshair || [ -x '$HOME/.local/bin/crosshair' ]"
 

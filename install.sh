@@ -417,6 +417,17 @@ install_file() {
     fi
 
     # 3. Standard symlinked files
+    # Stateful runtime files (e.g. gwenviewrc which stores recent file history) should be copied, not symlinked
+    if [[ "$relative_to_home" == ".config/gwenviewrc" ]]; then
+        if [ ! -f "$target_path" ] || [ -L "$target_path" ]; then
+            rm -f -- "$target_path" 2>/dev/null || true
+            mkdir -p "$(dirname -- "$target_path")"
+            cp -f -- "$source_path" "$target_path"
+            echo -e "  [${GREEN}copied${NC}] $relative_to_home (state-safe)"
+        fi
+        return
+    fi
+
     if [ -e "$target_path" ] || [ -L "$target_path" ]; then
         # If target already resolves to source, ensure link text is canonical (e.g. migrate from dank-dotfiles)
         if [ "$(readlink -f "$target_path" 2>/dev/null || true)" = "$(readlink -f "$source_path" 2>/dev/null || true)" ]; then

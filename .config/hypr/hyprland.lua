@@ -276,6 +276,8 @@ require("dms.windowrules")
 hl.config({
     general = {
         border_size = 0,
+        resize_on_border = true,
+        allow_tearing = true,
         ["col.active_border"] = "rgba(d9d9d9a0)",
         ["col.inactive_border"] = "rgba(33333318)",
     },
@@ -294,6 +296,12 @@ hl.config({
             xray = false,
             vibrancy = 0.03,
             noise = 0,
+        },
+        shadow = {
+            enabled = true,
+            range = 16,
+            render_power = 2,
+            color = "rgba(aaaaaa09)",
         },
     },
     windowrulev2 = {
