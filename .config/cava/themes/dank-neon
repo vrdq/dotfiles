@@ -1,0 +1,19 @@
+# CAVA Theme: dank-neon
+# Monochrome base with the system's signature neon green cursor accent (#76ff03)
+
+[color]
+
+# Keep terminal background transparent
+# background = default
+foreground = '#76ff03'
+
+# Gradient: charcoal to crisp white to neon accent peak
+gradient = 1
+gradient_color_1 = '#323232'
+gradient_color_2 = '#484848'
+gradient_color_3 = '#656565'
+gradient_color_4 = '#888888'
+gradient_color_5 = '#b2b2b2'
+gradient_color_6 = '#d8d8d8'
+gradient_color_7 = '#ffffff'
+gradient_color_8 = '#76ff03'

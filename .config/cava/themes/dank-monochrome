@@ -1,0 +1,19 @@
+# CAVA Theme: dank-monochrome
+# Matches system monochrome dotfiles (Kitty, Btop, DankMaterialShell, Hyprland)
+
+[color]
+
+# Keep terminal background transparent
+# background = default
+foreground = '#e2e2e2'
+
+# Vertical gradient: subtle dark charcoal at the floor rising to brilliant pure white at the peak
+gradient = 1
+gradient_color_1 = '#393939'
+gradient_color_2 = '#4e4e4e'
+gradient_color_3 = '#666666'
+gradient_color_4 = '#808080'
+gradient_color_5 = '#9e9e9e'
+gradient_color_6 = '#bfbfbf'
+gradient_color_7 = '#dedede'
+gradient_color_8 = '#ffffff'

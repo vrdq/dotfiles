@@ -11,8 +11,8 @@
     "display": {
         "separator": " 󰁔 ",
         "color": {
-            "keys": "cyan",
-            "title": "green"
+            "keys": "white",
+            "title": "white"
         }
     },
     "modules": [
@@ -21,7 +21,7 @@
             "color": {
                 "user": "green",
                 "at": "bright_white",
-                "host": "cyan"
+                "host": "white"
             }
         },
         {
@@ -30,58 +30,47 @@
         },
         {
             "type": "wm",
-            "key": "󰖲 WM",
-            "keyColor": "green"
+            "key": "󰖲 WM"
         },
         {
             "type": "terminal",
-            "key": "󰞷 Terminal",
-            "keyColor": "green"
+            "key": "󰞷 Terminal"
         },
         {
             "type": "shell",
-            "key": "󰞷 Shell",
-            "keyColor": "green"
+            "key": "󰞷 Shell"
         },
         {
             "type": "font",
-            "key": "󰛖 Font",
-            "keyColor": "green"
+            "key": "󰛖 Font"
         },
         {
             "type": "icons",
-            "key": "󰀻 Icons",
-            "keyColor": "green"
+            "key": "󰀻 Icons"
         },
         {
             "type": "cpu",
-            "key": "󰍛 CPU",
-            "keyColor": "yellow"
+            "key": "󰍛 CPU"
         },
         {
             "type": "gpu",
-            "key": "󰢮 GPU",
-            "keyColor": "yellow"
+            "key": "󰢮 GPU"
         },
         {
             "type": "memory",
-            "key": "󰘚 Memory",
-            "keyColor": "yellow"
+            "key": "󰘚 Memory"
         },
         {
             "type": "disk",
-            "key": "󰋊 Disk",
-            "keyColor": "yellow"
+            "key": "󰋊 Disk"
         },
         {
             "type": "display",
-            "key": "󰍹 Display",
-            "keyColor": "magenta"
+            "key": "󰍹 Display"
         },
         {
             "type": "battery",
-            "key": "󰁹 Battery",
-            "keyColor": "magenta"
+            "key": "󰁹 Battery"
         },
         {
             "type": "custom",

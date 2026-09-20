@@ -1,12 +1,42 @@
-QTreeView, QTreeView::item, QHeaderView::section {
-    background-color: #181818;
-    alternate-background-color: #181818;
-    color: #e0e0e0;
+/* Dolphin file manager dark stylesheet
+ * Harmonized to DankMaterialShell / Oxocarbon desktop palette (#131313, #262626, #393939, #e2e2e2)
+ */
+
+QTreeView, QTreeView::item {
+    background-color: #131313;
+    alternate-background-color: #191919;
+    color: #e2e2e2;
+    border: none;
 }
+
+QHeaderView::section {
+    background-color: #191919;
+    color: #a6a6a6;
+    border: none;
+    border-bottom: 1px solid #262626;
+    padding: 4px 8px;
+}
+
 QTreeView::item:hover {
-    background-color: #282828;
-}
-QTreeView::item:selected {
-    background-color: #383838;
+    background-color: #262626;
     color: #ffffff;
+}
+
+QTreeView::item:selected {
+    background-color: #393939;
+    color: #ffffff;
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #131313;
+    border: none;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #393939;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
+    background: #525252;
 }
