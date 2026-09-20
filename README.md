@@ -12,6 +12,7 @@ Includes an automated installer that backs up existing configuration files befor
 - Fish and Bash: Fish for interactive shell use with custom prompt; Bash configured with `ble.sh` for syntax highlighting and autosuggestions.
 - Neovim: LazyVim configuration synchronized with DMS theme tokens.
 - Crosshair overlay: native Wayland layer-shell daemon in C (`src/crosshair`) with Qt settings dialog (`crosshair-gui`).
+- Brave Origin: dark monochrome browser theme and JetBrains Mono webpage extension with native icon font preservation.
 - Helper scripts: screenshot utility to clipboard, GPU offload wrapper (`game-run`), and power profile toggle.
 
 ## Installation
@@ -113,6 +114,7 @@ The installer creates timestamped backups in `~/.dotfiles-backup/backup-<timesta
 ├── home/                   # .bashrc, .blerc, .inputrc
 ├── scripts/                # Helper tools installed to ~/.local/bin
 ├── src/crosshair/          # Crosshair overlay C source and Makefile
+├── themes/                 # Brave Origin theme and JetBrains Mono web extension
 ├── wallpapers/             # Wallpaper assets
 ├── install.sh              # Installer with automated backup
 └── uninstall.sh            # Rollback script

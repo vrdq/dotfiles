@@ -64,3 +64,6 @@ if [[ ${BLE_VERSION-} ]]; then
 fi
 
 . "$HOME/.cargo/env"
+
+# SLSsteam: Add wrapper to PATH
+export PATH="$HOME/.local/share/SLSsteam/path:$PATH"
