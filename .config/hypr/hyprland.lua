@@ -20,11 +20,12 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Qt / Electron
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
-hl.env("QT_QPA_PLATFORMTHEME_QT6", "kde")
+hl.env("QT_QPA_PLATFORMTHEME_QT6", "qt6ct")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hl.env("QT_ENABLE_HIGHDPI_SCALING", "1")
-hl.env("GTK_THEME", "Breeze-Dark")
+-- GTK_THEME removed: it overrides libadwaita apps; settings.ini + gsettings already set Breeze-Dark
+-- hl.env("GTK_THEME", "Breeze-Dark")
 hl.env("COLORSCHEME", "prefer-dark")
 hl.env("NO_PROXY", "127.0.0.1,localhost,::1")
 hl.env("no_proxy", "127.0.0.1,localhost,::1")
@@ -242,6 +243,7 @@ hl.window_rule({
 -- Suppress animation on DMS overlay
 hl.layer_rule({ match = { namespace = "^(quickshell)$" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "^dms:.*" }, no_anim = true })
+hl.layer_rule({ match = { namespace = "^(selection|hyprpicker)$" }, no_anim = true })
 
 -- ========================================
 -- DMS MODULES (always last)
