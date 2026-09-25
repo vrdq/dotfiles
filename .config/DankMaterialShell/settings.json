@@ -1,7 +1,7 @@
 {
   "currentThemeName": "custom",
-  "currentThemeCategory": "registry",
-  "customThemeFile": "~/.config/DankMaterialShell/themes/oxocarbon/theme.json",
+  "currentThemeCategory": "custom",
+  "customThemeFile": "/home/vrdq/.config/DankMaterialShell/themes/oxocarbon/theme.json",
   "registryThemeVariants": {
     "flexoki": "red",
     "amoledBlack": {
@@ -30,7 +30,6 @@
   "dmsWindowsFloating": false,
   "cornerRadius": 8,
   "hyprlandLayoutGapsOverride": 4,
-  "hyprlandLayoutRadiusOverride": 12,
   "firstDayOfWeek": 0,
   "clockFormat": "12h",
   "useFahrenheit": true,
@@ -40,6 +39,9 @@
   "springBounce": 0,
   "enableRippleEffects": false,
   "m3ElevationEnabled": false,
+  "blurLayerOutlineOpacity": 0,
+  "blurBorderEnabled": false,
+  "wallpaperBackgroundColorMode": "custom",
   "controlCenterShowMicPercent": true,
   "controlCenterWidgets": [
     {
@@ -73,6 +75,7 @@
       "width": 50
     }
   ],
+  "showWorkspacePadding": true,
   "waveProgressEnabled": false,
   "trayAutoOverflow": false,
   "trayPopupSingleLine": false,
@@ -195,7 +198,10 @@
       "enabled": true,
       "position": 0,
       "screenPreferences": [
-        "all"
+        {
+          "name": "eDP-1",
+          "model": "0x0C29"
+        }
       ],
       "showOnLastDisplay": true,
       "leftWidgets": [
@@ -300,7 +306,7 @@
       "popupGapsManual": 4,
       "maximizeDetection": false,
       "useOverlayLayer": false,
-      "scrollEnabled": true,
+      "scrollEnabled": false,
       "scrollXBehavior": "column",
       "scrollYBehavior": "none",
       "shadowIntensity": 0,

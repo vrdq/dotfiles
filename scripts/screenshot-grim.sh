@@ -11,7 +11,10 @@ FILE="$SHOT_DIR/Screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
 if command -v spectacle >/dev/null 2>&1; then
     spectacle -r -b -n -o "$FILE"
 elif command -v grim >/dev/null 2>&1 && command -v slurp >/dev/null 2>&1; then
-    GEOM=$(slurp) && grim -g "$GEOM" "$FILE"
+    if GEOM=$(slurp); then
+        sleep 0.1
+        grim -g "$GEOM" "$FILE"
+    fi
 fi
 
 # Copy the saved image file to the clipboard natively via wl-copy

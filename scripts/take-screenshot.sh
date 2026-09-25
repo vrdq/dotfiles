@@ -12,7 +12,10 @@ case "$1" in
         GEOM=$(hyprctl activewindow -j | jq -r '"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"')
         if [ "$GEOM" = "null,null nullxnull" ] || [ -z "$GEOM" ]; then
             # Fallback to slurp if no active window
-            GEOM=$(slurp)
+            if ! GEOM=$(slurp); then
+                exit 1
+            fi
+            sleep 0.1
         fi
         grim -g "$GEOM" "$FILE"
         ;;
@@ -21,6 +24,7 @@ case "$1" in
         if ! GEOM=$(slurp); then
             exit 1
         fi
+        sleep 0.1
         grim -g "$GEOM" "$FILE"
         ;;
 esac

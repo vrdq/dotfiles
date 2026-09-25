@@ -38,3 +38,5 @@ if status is-interactive
     function fish_title
     end
 end
+
+fish_add_path /home/vrdq/.spicetify
