@@ -150,6 +150,7 @@
   "batterySuspendBehavior": 1,
   "batteryProfileName": "0",
   "batteryChargeLimit": 80,
+  "terminalsAlwaysDark": true,
   "runDmsMatugenTemplates": false,
   "dockShowOverflowBadge": false,
   "notificationPopupShadowEnabled": false,

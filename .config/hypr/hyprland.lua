@@ -240,8 +240,64 @@ hl.window_rule({
     center = true,
 })
 
+-- Screen-Sharing Picker Dialog
+hl.window_rule({
+    match = { class = "^(hyprland-share-picker)$" },
+    float = true,
+    center = true,
+    size = "560 360",
+})
+
+-- Disable blur on floating terminal
+hl.window_rule({
+    match = { class = "^(kitty|spoff)$", float = true },
+    no_blur = true,
+})
+
+-- Adaptive glow: 50% weaker glow on floating windows, full glow on tiled windows
+local last_floating_state = nil
+
+local function sync_shadow_for_active_window()
+    local win = hl.get_active_window()
+    local is_floating = (win ~= nil and win.floating == true)
+    if is_floating == last_floating_state then
+        return
+    end
+    last_floating_state = is_floating
+
+    if is_floating then
+        hl.config({
+            decoration = {
+                shadow = {
+                    color = "rgba(aaaaaa05)",
+                    range = 12,
+                    render_power = 2,
+                }
+            }
+        })
+    else
+        hl.config({
+            decoration = {
+                shadow = {
+                    color = "rgba(aaaaaa09)",
+                    range = 16,
+                    render_power = 2,
+                }
+            }
+        })
+    end
+end
+
+hl.on("window.active", sync_shadow_for_active_window)
+hl.on("window.open", sync_shadow_for_active_window)
+hl.on("window.close", sync_shadow_for_active_window)
+hl.timer(sync_shadow_for_active_window, { timeout = 250, type = "repeat" })
+
+
+
 -- Suppress animation on DMS overlay
 hl.layer_rule({ match = { namespace = "^(quickshell)$" }, no_anim = true })
+hl.layer_rule({ match = { namespace = "^(quickshell-share-picker)$" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "^dms:.*" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "^(selection|hyprpicker)$" }, no_anim = true })
 
@@ -304,6 +360,7 @@ hl.config({
             range = 16,
             render_power = 2,
             color = "rgba(aaaaaa09)",
+            color_inactive = "rgba(aaaaaa04)",
         },
     },
     windowrulev2 = {
