@@ -1,0 +1,141 @@
+/* =============================================================================
+   Hyprland Share Picker - Flat Monochrome Oxocarbon Theme
+   Flat buttons with slight contrast, zero gradients.
+   ============================================================================= */
+
+* {
+    font-family: "JetBrains Mono";
+    font-size: 13px;
+    outline: none;
+}
+
+/* Main window background */
+QWidget {
+    background-color: #131313;
+    color: #dde1e6;
+}
+
+/* Central container / tab pane */
+QTabWidget::pane {
+    border: 1px solid #242424;
+    border-radius: 7px;
+    background-color: #161616;
+    padding: 6px;
+}
+
+/* Top Tab Bar */
+QTabBar {
+    qproperty-drawBase: 0;
+    margin-bottom: 6px;
+}
+
+QTabBar::tab {
+    background-color: #1a1a1a;
+    color: #888888;
+    padding: 7px 18px;
+    margin-right: 6px;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+QTabBar::tab:hover {
+    background-color: #222222;
+    color: #cccccc;
+    border-color: #303030;
+}
+
+QTabBar::tab:selected {
+    background-color: #282828;
+    color: #ffffff;
+    border: 1px solid #3c3c3c;
+    font-weight: 600;
+}
+
+/* Option Buttons (Screen / Window list items) */
+/* Solid flat background, slight contrast against #161616 pane, zero gradient */
+QPushButton {
+    background-color: #202020;
+    color: #dde1e6;
+    border: 1px solid #2d2d2d;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 3px 0px;
+    text-align: left;
+    font-weight: 500;
+}
+
+QPushButton:hover {
+    background-color: #282828;
+    border-color: #3a3a3a;
+    color: #ffffff;
+}
+
+QPushButton:pressed {
+    background-color: #1a1a1a;
+    border-color: #484848;
+}
+
+/* Scroll Area for items */
+QScrollArea {
+    background-color: transparent;
+    border: none;
+}
+
+QScrollArea > QWidget > QWidget {
+    background-color: transparent;
+}
+
+/* Checkbox (Allow restore token) */
+QCheckBox {
+    color: #888888;
+    spacing: 8px;
+    padding-top: 8px;
+    padding-bottom: 2px;
+    font-size: 12px;
+}
+
+QCheckBox:hover {
+    color: #cccccc;
+}
+
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #1e1e1e;
+}
+
+QCheckBox::indicator:hover {
+    border-color: #444444;
+    background-color: #252525;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #dde1e6;
+    border-color: #dde1e6;
+}
+
+/* Scrollbar */
+QScrollBar:vertical {
+    border: none;
+    background: #141414;
+    width: 6px;
+    margin: 0px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical {
+    background: #2a2a2a;
+    min-height: 20px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #383838;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}

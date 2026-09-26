@@ -94,20 +94,18 @@ Item {
     }
 
     function initialWidth() {
-        const geometry = loadGeometry();
-        return boundedDimension(geometry.width, 800, 640, 2400);
+        return 800;
     }
 
     function initialHeight() {
-        const geometry = loadGeometry();
-        return boundedDimension(geometry.height, 500, 400, 1600);
+        return 500;
     }
 
     function saveGeometry() {
         geometryFile.setText(JSON.stringify({
-            "height": Math.round(hostWindow.height),
+            "height": 500,
             "surface": "panel",
-            "width": Math.round(hostWindow.width)
+            "width": 800
         }) + "\n");
     }
 

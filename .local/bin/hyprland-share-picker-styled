@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+# =============================================================================
+# Hyprland Share Picker - Styled wrapper for xdg-desktop-portal-hyprland
+# Launches hyprland-share-picker with flat, zero-gradient Oxocarbon styling.
+# =============================================================================
+
+STYLESHEET="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/share-picker.qss"
+
+if [ -f "$STYLESHEET" ]; then
+    exec /usr/bin/hyprland-share-picker -stylesheet "$STYLESHEET" "$@"
+else
+    exec /usr/bin/hyprland-share-picker "$@"
+fi
