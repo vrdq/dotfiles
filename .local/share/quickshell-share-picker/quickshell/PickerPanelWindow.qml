@@ -14,8 +14,8 @@ Scope {
         color: "transparent"
         screen: content.preferredScreen
         visible: content.windowModelReady && content.preferredScreen !== null
-        implicitWidth: content.preferredWidth
-        implicitHeight: content.preferredHeight
+        implicitWidth: content.preferredWidth + 48
+        implicitHeight: content.preferredHeight + 48
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "quickshell-share-picker"
@@ -29,10 +29,5 @@ Scope {
         }
 
         onClosed: content.cancel()
-    }
-
-    ScreenIdentificationOverlay {
-        targetScreen: content.identificationVisible ? content.identificationScreen : null
-        label: content.identificationLabel
     }
 }

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
@@ -401,7 +402,10 @@ Item {
         const allowRestore = restoreToken.checked;
         const flags = allowRestore ? "r" : "";
         resultFile.setText("[SELECTION]" + flags + "/" + selection + "\n");
-        Qt.quit();
+        if (smokeMode)
+            Qt.quit();
+        else
+            closeAnimation.start();
     }
 
     function cancel() {
@@ -409,7 +413,10 @@ Item {
             return;
         finalized = true;
         saveGeometry();
-        Qt.quit();
+        if (smokeMode)
+            Qt.quit();
+        else
+            closeAnimation.start();
     }
 
     function shareCurrent() {
@@ -562,8 +569,8 @@ Item {
         preferredScreen = resolvePreferredScreen();
         rebuildScreens();
         const requestedTab = regionRecovery ? "region"
-            : String(Quickshell.env("XDPH_PICKER_DEFAULT_TAB") || "window").toLowerCase();
-        tabs.currentIndex = requestedTab === "screen" ? 0 : requestedTab === "region" ? 2 : 1;
+            : String(Quickshell.env("XDPH_PICKER_DEFAULT_TAB") || "screen").toLowerCase();
+        tabs.currentIndex = requestedTab === "window" ? 1 : requestedTab === "region" ? 2 : 0;
         restoreToken.checked = Quickshell.env("QSP_ALLOW_TOKEN") !== "0";
         if (smokeMode) {
             windowModelReady = true;
@@ -731,12 +738,71 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
-        color: picker.backgroundColor
-        radius: 8
-        border.color: picker.borderColor
-        border.width: 1
+    Item {
+        id: cardContainer
+        anchors.centerIn: parent
+        width: parent.width - 48
+        height: parent.height - 48
+
+        ParallelAnimation {
+            id: openAnimation
+            running: true
+            NumberAnimation {
+                target: cardContainer
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: cardContainer
+                property: "scale"
+                from: 0.94
+                to: 1.0
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        ParallelAnimation {
+            id: closeAnimation
+            NumberAnimation {
+                target: cardContainer
+                property: "opacity"
+                to: 0.0
+                duration: 130
+                easing.type: Easing.OutQuad
+            }
+            NumberAnimation {
+                target: cardContainer
+                property: "scale"
+                to: 0.94
+                duration: 130
+                easing.type: Easing.OutQuad
+            }
+            onFinished: {
+                Qt.quit();
+            }
+        }
+
+        MultiEffect {
+            source: card
+            anchors.fill: card
+            shadowEnabled: true
+            shadowColor: "#10aaaaaa"
+            shadowBlur: 0.65
+            shadowScale: 1.01
+            z: -1
+        }
+
+        Rectangle {
+            id: card
+            anchors.fill: parent
+            color: picker.backgroundColor
+            radius: 8
+            border.color: picker.borderColor
+            border.width: 1
 
         Repeater {
             model: picker.testMode ? null : Hyprland.toplevels
@@ -1489,4 +1555,5 @@ Item {
             }
         }
     }
+}
 }
