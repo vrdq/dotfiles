@@ -247,6 +247,12 @@ hl.window_rule({
     center = true,
     size = "560 360",
 })
+hl.window_rule({
+    match = { class = "^(quickshell-share-picker)$" },
+    float = true,
+    center = true,
+    size = "800 500",
+})
 
 -- Disable blur on floating terminal
 hl.window_rule({

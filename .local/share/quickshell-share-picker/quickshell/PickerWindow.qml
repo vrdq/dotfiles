@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
@@ -400,10 +399,7 @@ Item {
         const allowRestore = restoreToken.checked;
         const flags = allowRestore ? "r" : "";
         resultFile.setText("[SELECTION]" + flags + "/" + selection + "\n");
-        if (smokeMode)
-            Qt.quit();
-        else
-            closeAnimation.start();
+        Qt.quit();
     }
 
     function cancel() {
@@ -411,10 +407,7 @@ Item {
             return;
         finalized = true;
         saveGeometry();
-        if (smokeMode)
-            Qt.quit();
-        else
-            closeAnimation.start();
+        Qt.quit();
     }
 
     function shareCurrent() {
@@ -736,50 +729,23 @@ Item {
         }
     }
 
-    Item {
-        id: cardContainer
-        anchors.centerIn: parent
-        width: parent.width - 48
-        height: parent.height - 48
+    Shortcut {
+        sequence: "Alt+F4"
+        onActivated: picker.cancel()
+    }
 
-        NumberAnimation {
-            id: openAnimation
-            target: cardContainer
-            property: "opacity"
-            from: 0.0
-            to: 1.0
-            duration: 100
-            running: true
-        }
+    Shortcut {
+        sequence: "Escape"
+        onActivated: picker.cancel()
+    }
 
-        NumberAnimation {
-            id: closeAnimation
-            target: cardContainer
-            property: "opacity"
-            to: 0.0
-            duration: 80
-            onFinished: {
-                Qt.quit();
-            }
-        }
-
-        MultiEffect {
-            source: card
-            anchors.fill: card
-            shadowEnabled: true
-            shadowColor: "#05aaaaaa"
-            shadowBlur: 0.5
-            shadowScale: 1.0
-            z: -1
-        }
-
-        Rectangle {
-            id: card
-            anchors.fill: parent
-            color: picker.backgroundColor
-            radius: 8
-            border.color: picker.borderColor
-            border.width: 1
+    Rectangle {
+        id: card
+        anchors.fill: parent
+        color: picker.backgroundColor
+        radius: 8
+        border.color: picker.borderColor
+        border.width: 1
 
         Repeater {
             model: picker.testMode ? null : Hyprland.toplevels
@@ -1532,5 +1498,4 @@ Item {
             }
         }
     }
-}
 }
