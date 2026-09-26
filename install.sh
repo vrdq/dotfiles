@@ -35,6 +35,7 @@ if [ ! -d "$REPO_DIR/.config" ]; then
     else
         git clone https://github.com/vrdq/dotfiles.git "$HOME/dotfiles"
     fi
+    git -C "$HOME/dotfiles" submodule update --init --recursive || true
     cd "$HOME/dotfiles"
     if [ -e /dev/tty ]; then
         exec ./install.sh "$@" </dev/tty

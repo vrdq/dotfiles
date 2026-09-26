@@ -1,0 +1,3 @@
+[submodule ".config/DankMaterialShell/plugins/cavaVisualizer"]
+	path = .config/DankMaterialShell/plugins/cavaVisualizer
+	url = https://github.com/ernestowgg/cava-visualizer
