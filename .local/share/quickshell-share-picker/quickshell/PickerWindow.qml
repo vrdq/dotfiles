@@ -744,43 +744,22 @@ Item {
         width: parent.width - 48
         height: parent.height - 48
 
-        ParallelAnimation {
+        NumberAnimation {
             id: openAnimation
+            target: cardContainer
+            property: "opacity"
+            from: 0.0
+            to: 1.0
+            duration: 100
             running: true
-            NumberAnimation {
-                target: cardContainer
-                property: "opacity"
-                from: 0.0
-                to: 1.0
-                duration: 150
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                target: cardContainer
-                property: "scale"
-                from: 0.94
-                to: 1.0
-                duration: 150
-                easing.type: Easing.OutCubic
-            }
         }
 
-        ParallelAnimation {
+        NumberAnimation {
             id: closeAnimation
-            NumberAnimation {
-                target: cardContainer
-                property: "opacity"
-                to: 0.0
-                duration: 130
-                easing.type: Easing.OutQuad
-            }
-            NumberAnimation {
-                target: cardContainer
-                property: "scale"
-                to: 0.94
-                duration: 130
-                easing.type: Easing.OutQuad
-            }
+            target: cardContainer
+            property: "opacity"
+            to: 0.0
+            duration: 80
             onFinished: {
                 Qt.quit();
             }
@@ -790,9 +769,9 @@ Item {
             source: card
             anchors.fill: card
             shadowEnabled: true
-            shadowColor: "#10aaaaaa"
-            shadowBlur: 0.65
-            shadowScale: 1.01
+            shadowColor: "#05aaaaaa"
+            shadowBlur: 0.5
+            shadowScale: 1.0
             z: -1
         }
 
