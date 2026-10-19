@@ -21,5 +21,8 @@ MenuBar=Disabled
 [PreviewSettings]
 Plugins=appimagethumbnail,audiothumbnail,comicbookthumbnail,cursorthumbnail,directorythumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,opendocumentthumbnail,svgthumbnail,windowsexethumbnail,windowsimagethumbnail,ffmpegthumbs,blenderthumbnail,gsthumbnail,mobithumbnail,rawthumbnail,fontthumbnail,ffmpegthumbnailer,gsf-office,glycin-heif,glycin-image-rs,glycin-jxl,glycin-svg
 
+[Search]
+Location=Everywhere
+
 [UiSettings]
 ColorScheme=DankMatugen

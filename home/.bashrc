@@ -67,3 +67,4 @@ fi
 
 # SLSsteam: Add wrapper to PATH
 export PATH="$HOME/.local/share/SLSsteam/path:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
