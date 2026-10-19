@@ -40,9 +40,20 @@ if [ "$is_nvidia" = true ]; then
         exit 1
     fi
 
-    # Dynamically select DRM device if not already specified
+    # The MUX can wire the panel to either GPU, so list every card with a
+    # connected display first (it becomes the primary renderer), NVIDIA after.
     if [ -z "$AQ_DRM_DEVICES" ]; then
-        export AQ_DRM_DEVICES="$nvidia_card"
+        drm_devices=""
+        for status_file in /sys/class/drm/card[0-9]*-*/status; do
+            read -r state < "$status_file" || continue
+            [ "$state" = connected ] || continue
+            connector="${status_file%/status}"
+            card="/dev/dri/${connector##*/}"
+            card="${card%%-*}"
+            [[ ":$drm_devices:" == *":$card:"* ]] || drm_devices="${drm_devices:+$drm_devices:}$card"
+        done
+        [[ ":$drm_devices:" == *":$nvidia_card:"* ]] || drm_devices="${drm_devices:+$drm_devices:}$nvidia_card"
+        export AQ_DRM_DEVICES="$drm_devices"
     fi
     export LIBVA_DRIVER_NAME=nvidia
     export NVD_BACKEND=direct
